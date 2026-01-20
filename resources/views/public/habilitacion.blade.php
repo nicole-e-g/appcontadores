@@ -11,7 +11,7 @@
             <div class="col-md-6 text-center">
                 <img src="{{ asset('assets/img/Logotipo_Colegio.png') }}" height="100" class="mb-4">
                 <h2 class="mb-4">Consulta de Habilitacion Profesional</h2>
-                
+
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <form action="{{ route('public.habilidad.buscar') }}" method="POST">
@@ -27,21 +27,26 @@
                 @if(isset($agremiado))
                     <div class="card shadow border-0">
                         <div class="card-body p-4">
-                            <h4 class="card-title">{{ $agremiado->nombres }} {{ $agremiado->apellidos }}</h4>
+                            <h4 class="card-title fw-bold text-uppercase">{{ $agremiado->nombres }} {{ $agremiado->apellidos }}</h4>
                             <p class="text-muted">DNI: {{ $agremiado->dni }}</p>
                             <p class="text-muted">Matrícula: {{ $agremiado->matricula }}</p>
                             <hr>
-                            
+
                             @if($agremiado->estado == 'Habilitado')
                                 <div class="alert alert-success">
                                     <h3 class="mb-0">HABILITADO</h3>
                                 </div>
-                                <p>Habilitación vigente hasta: 
+                                <p>Habilitación vigente hasta:
                                     <strong>{{ \Carbon\Carbon::parse($agremiado->fin_habilitacion)->translatedFormat('d F Y') }}</strong>
                                 </p>
                             @else
                                 <div class="alert alert-danger">
                                     <h3 class="mb-0">INHABILITADO</h3>
+                                    @if($agremiado->fin_habilitacion)
+                                        Habilitado hasta: {{ \Carbon\Carbon::parse($agremiado->fin_habilitacion)->format('d/m/Y') }}
+                                    @else
+                                        <span class="text-danger">SIN FECHA DE VENCIMIENTO REGISTRADA</span>
+                                    @endif
                                 </div>
                                 <p>Por favor, acérquese al Colegio para regularizar su situación.</p>
                             @endif

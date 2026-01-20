@@ -126,6 +126,11 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="ruc_crear" class="form-label">RUC:</label>
+                            <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="ruc_crear" name="ruc" placeholder="Ej: 10254785041" required>
+                        </div>
+
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="matricula_crear" class="form-label">N° Matricula:</label>
@@ -140,11 +145,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="celular1_crear" class="form-label">Celular 1:</label>
-                                <input type="text" class="form-control" id="celular1_crear" name="celular1" required>
+                                <input type="text" maxlength="9" pattern="[0-9]{9}" class="form-control" id="celular1_crear" name="celular1" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="celular2_crear" class="form-label">Celular 2:</label>
-                                <input type="text" class="form-control" id="celular2_crear" name="celular2" >
+                                <input type="text" maxlength="9" pattern="[0-9]{9}" class="form-control" id="celular2_crear" name="celular2" >
                             </div>
                         </div>
 

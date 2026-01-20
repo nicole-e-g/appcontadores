@@ -247,18 +247,24 @@
 
                         <div class="mb-3">
                             <label for="apellido_crear" class="form-label">Mes de Inicio:</label>
-                            <select name="mes_inicio" class="form-select" required>
-                                @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                    <option value="{{ $index + 1 }}">{{ $mes }}</option>
+                            <select name="mes_inicio" class="form-select">
+                                @foreach(range(1, 12) as $m)
+                                    <option value="{{ $m }}"
+                                        {{ $m == $siguienteMes ? 'selected' : '' }}
+                                        {{ $m < $siguienteMes ? 'disabled' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $m)->translatedFormat('F') }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="dni_crear" class="form-label">Mes Final:</label>
-                            <select name="mes_final" class="form-select" required>
-                                @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                    <option value="{{ $index + 1 }}">{{ $mes }}</option>
+                            <select name="mes_final" id="mes_final" class="form-select">
+                                @foreach(range(1, 12) as $m)
+                                    <option value="{{ $m }}" {{ $m == $siguienteMes ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $m)->translatedFormat('F') }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>

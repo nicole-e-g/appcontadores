@@ -77,11 +77,13 @@
                 </svg> Dashboard</a>
             </li>
             <li class="nav-title">Inicio</li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios.index') }}">
-                <svg class="nav-icon">
-                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                </svg> Usuarios</a>
-            </li>
+            @if(auth()->guard('admin')->user()->rol === 'superadmin')
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
+                    </svg> Usuarios</a>
+                </li>
+            @endif
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.agremiados.index') }}">
                 <svg class="nav-icon">
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/brand.svg#cib-slideshare') }}"></use>

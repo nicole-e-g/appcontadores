@@ -22,10 +22,10 @@ Route::post('/consulta-habilitacion', [App\Http\Controllers\PublicAgremiadoContr
 Route::prefix('admin')->group(function () {
     // 1. Esta es la ruta GET que te da el error 404
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('admin.login.form');
-    
+
     // 2. Esta es la ruta POST para cuando envías el formulario
     Route::post('/login', [LoginController::class, 'login'])->name('admin.login');
-    
+
     // 3. Esta es la ruta para el botón de "Cerrar Sesión"
     Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
@@ -35,14 +35,15 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
     // Esta es la ruta que mostrará tu 'index' después del login
     Route::get('/dashboard', [UsuarioController::class, 'index'])->name('admin.dashboard');
 
-    //USUARIOS
-    Route::get('/usuarios', [UsuarioController::class, 'listado'])->name('admin.usuarios.index');
+    Route::middleware(['superadmin'])->group(function () {//USUARIOS
+        Route::get('/usuarios', [UsuarioController::class, 'listado'])->name('admin.usuarios.index');
 
-    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('admin.usuarios.store');
+        Route::post('/usuarios', [UsuarioController::class, 'store'])->name('admin.usuarios.store');
 
-    Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('admin.usuarios.update');
-    
-    Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('admin.usuarios.destroy');
+        Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('admin.usuarios.update');
+
+        Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('admin.usuarios.destroy');
+    });
 
     //AGREMIADOS
     Route::get('/agremiados', [AgremiadoController::class, 'index'])->name('admin.agremiados.index');

@@ -15,7 +15,7 @@ class AgremiadoController extends Controller
              ->where('fin_habilitacion', '<=', Carbon::now())
              ->update(['estado' => 'Inhabilitado']);
         // Traemos todos los agremiados que NO estén borrados (SoftDelete automático)
-        $agremiados = Agremiado::all(); 
+        $agremiados = Agremiado::all();
         return view('listadoagremiados', compact('agremiados'));
     }
 
@@ -26,6 +26,7 @@ class AgremiadoController extends Controller
             'matricula'        => 'required|string|unique:agremiados',
             'fecha_matricula'  => 'required|date',
             'dni'              => 'required|string|size:8|unique:agremiados',
+            'ruc'              => 'nullable|string|size:11|unique:agremiados',
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
@@ -49,6 +50,7 @@ class AgremiadoController extends Controller
         $data = $request->validate([
             'matricula'        => 'required|string|unique:agremiados,matricula,' . $agremiado->id,
             'dni'              => 'required|string|size:8|unique:agremiados,dni,' . $agremiado->id,
+            'ruc'              => 'required|string|size:11|unique:agremiados,ruc,' . $agremiado->id,
             'fecha_matricula'  => 'required|date',
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
@@ -70,12 +72,26 @@ class AgremiadoController extends Controller
     {
         // 1. Buscamos los pagos que pertenecen a este agremiado
         // Usamos el ID del agremiado que ya tenemos en la mano
-        $pagos = \App\Models\Pago::where('agremiado_id', $agremiado->id)->get();
+        $pagos = $agremiado->pagos()->orderBy('id', 'desc')->get();
+        $ultimo = \App\Models\Pago::where('agremiado_id', $agremiado->id)
+                ->where('tipo_pago', 'Habilitacion')
+                ->where('estado', 'Pagado')
+                ->orderBy('año', 'desc')
+                ->orderBy('mes_final', 'desc')
+                ->first();
+        // Si hay pago, el siguiente mes es mes_final + 1; si no, es 1 (Enero)
+        $siguienteMes = $ultimo ? ($ultimo->mes_final + 1) : 1;
+        $siguienteAño = $ultimo ? $ultimo->año : date('Y');
 
+        // Si el mes final fue 12 (Diciembre), saltamos al siguiente año
+        if ($siguienteMes > 12) {
+            $siguienteMes = 1;
+            $siguienteAño++;
+        }
         // 2. Enviamos AMBAS cosas a la vista
         // 'agremiado' para los datos de arriba (DNI, Nombre, etc.)
         // 'pagos' para la tabla de abajo (Historial de Cuotas)
-        return view('detalleagramiados', compact('agremiado', 'pagos'));
+        return view('detalleagramiados', compact('agremiado', 'pagos', 'siguienteMes', 'siguienteAño'));
     }
 
     public function destroy($id)

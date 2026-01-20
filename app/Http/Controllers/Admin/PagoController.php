@@ -26,10 +26,29 @@ class PagoController extends Controller
             'fecha_pago'   => 'required_if:tipo_pago,Constancia|nullable|date',
         ]);
 
-        // B. Guardamos el Pago (Habilitacion o Constancia)
+        // B. VALIDACIÓN DE SOLAPAMIENTO (Solo para Habilitación)
+        if ($request->tipo_pago === 'Habilitacion') {
+            $existeSolapamiento = Pago::where('agremiado_id', $request->agremiado_id)
+                ->where('tipo_pago', 'Habilitacion')
+                ->where('año', $request->año)
+                ->where('estado', 'Pagado') // Ignoramos los anulados
+                ->where(function($query) use ($request) {
+                    // Verificamos si el rango solicitado choca con registros existentes
+                    $query->whereBetween('mes_inicio', [$request->mes_inicio, $request->mes_final])
+                        ->orWhereBetween('mes_final', [$request->mes_inicio, $request->mes_final]);
+                })
+                ->exists();
+
+            if ($existeSolapamiento) {
+                return redirect()->back()
+                    ->withInput() // Mantiene los datos en el modal
+                    ->with('error', 'Error: Uno o más meses seleccionados ya cuentan con un pago registrado para el año ' . $request->año . '.');
+            }
+        }
+        // C. Guardamos el Pago (Habilitacion o Constancia)
         $pago = \App\Models\Pago::create($request->all());
 
-        // C. ACTUALIZACIÓN DE HABILIDAD (Solo si es Habilitacion)
+        // D. ACTUALIZACIÓN DE HABILIDAD (Solo si es Habilitacion)
         // Las constancias no afectan la fecha de vencimiento
         if ($pago->tipo_pago === 'Habilitacion') {
             $this->sincronizarHabilidad($pago->agremiado_id);
@@ -114,15 +133,17 @@ class PagoController extends Controller
     public function descargarPDF(Pago $pago)
     {
         $agremiado = $pago->agremiado;
-        $fechaVencimiento = \Carbon\Carbon::parse($agremiado->fin_habilitacion);
+        $fechaVencimiento = $agremiado->fin_habilitacion
+            ? \Carbon\Carbon::parse($agremiado->fin_habilitacion)
+            : null;
 
         $data = [
             'nombres' => $agremiado->nombres . ' ' . $agremiado->apellidos,
             'matricula' => $agremiado->matricula,
             'estado' => strtoupper($agremiado->estado),
-            'dia_fin' => $fechaVencimiento->endOfMonth()->format('d'), // {{fines de mes}}
-            'mes_fin' => $fechaVencimiento->translatedFormat('F'),      // {{Mes final}}
-            'año_fin' => $fechaVencimiento->format('Y'),               // {{Año}}
+            'dia_fin' => $fechaVencimiento ? $fechaVencimiento->endOfMonth()->format('d'): '--', // {{fines de mes}}
+            'mes_fin' => $fechaVencimiento ? $fechaVencimiento->translatedFormat('F'): '---',      // {{Mes final}}
+            'año_fin' => $fechaVencimiento ? $fechaVencimiento->format('Y'): '----',               // {{Año}}
             'fecha_hoy' => now()->translatedFormat('d \d\e F \d\e Y'), // {{Fecha de descarga}}
         ];
 
