@@ -207,6 +207,11 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="ruc-{{ $agremiado->id}}" class="form-label">RUC:</label>
+                                <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="ruc-{{ $agremiado->id}}" name="ruc" value="{{ $agremiado->ruc }}">
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="matricula-{{ $agremiado->id}}" class="form-label">N° Matricula:</label>
@@ -221,11 +226,11 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="celular-{{ $agremiado->id}}" class="form-label">Celular 1:</label>
-                                    <input type="text" class="form-control" id="celular-{{ $agremiado->id}}" name="celular1" value="{{ $agremiado->celular[0] ?? '' }}" required>
+                                    <input type="text" class="form-control" maxlength="9" pattern="[0-9]{9}" id="celular-{{ $agremiado->id}}" name="celular1" value="{{ $agremiado->celular[0] ?? '' }}" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="celular-{{ $agremiado->id}}" class="form-label">Celular 2:</label>
-                                    <input type="text" class="form-control" id="celular-{{ $agremiado->id}}" name="celular2" value="{{ $agremiado->celular[1] ?? '' }}" >
+                                    <input type="text" class="form-control" maxlength="9" pattern="[0-9]{9}" id="celular-{{ $agremiado->id}}" name="celular2" value="{{ $agremiado->celular[1] ?? '' }}" >
                                 </div>
                             </div>
 
