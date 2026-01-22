@@ -134,7 +134,7 @@
 
     <!-- Modal para actualizar agremiado-->
     <div class="modal fade" id="modalEditarAgremiado" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form id="formEditarAgremiado" method="POST">
                     @csrf
@@ -145,13 +145,62 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">DNI:</label>
+                            <div class="col-md-6">
+                                <label for="edit_dni" class="form-label">DNI:</label>
                                 <input type="text" class="form-control" id="edit_dni" name="dni">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">RUC:</label>
-                                <input type="text" class="form-control" id="edit_ruc" name="ruc" maxlength="11">
+                            <div class="col-md-6">
+                                <label for="edit_fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
+                                <input type="date" class="form-control" id="edit_fecha_nacimiento" name="fecha_nacimiento">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="edit_nombres" class="form-label">Nombres:</label>
+                                <input type="text" class="form-control" id="edit_nombres" name="nombres">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_apellidos" class="form-label">Apellidos:</label>
+                                <input type="text" class="form-control" id="edit_apellidos" name="apellidos">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_ruc" class="form-label">RUC:</label>
+                            <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="edit_ruc" name="ruc">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="edit_matricula" class="form-label">N° Matricula:</label>
+                                <input type="text" class="form-control" id="edit_matricula" name="matricula">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_fecha_matricula" class="form-label">Fecha de Matricula:</label>
+                                <input type="date" class="form-control" id="edit_fecha_matricula" name="fecha_matricula">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="edit_celular1" class="form-label">Celular 1:</label>
+                                <input type="text" maxlength="9" pattern="[0-9]{9}" class="form-control" id="edit_celular1" name="celular1">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_celular2" class="form-label">Celular 2:</label>
+                                <input type="text" maxlength="9" pattern="[0-9]{9}" class="form-control" id="edit_celular2" name="celular2">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="edit_correo1" class="form-label">Correo 1:</label>
+                                <input type="text" class="form-control" id="edit_correo1" name="correo1">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_correo2" class="form-label">Correo 2:</label>
+                                <input type="text" class="form-control" id="edit_correo2" name="correo2">
                             </div>
                         </div>
                     </div>
@@ -166,7 +215,7 @@
 
     <!-- Modal para eliminar agremiado-->
     <div class="modal fade" id="modalEliminarAgremiado" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form id="formEliminarAgremiado" method="POST">
                     @csrf
@@ -238,9 +287,12 @@
             $.get('/admin/agremiados/' + id + '/edit', function(data) {
                 // Datos básicos
                 $('#edit_dni').val(data.dni);
-                $('#edit_ruc').val(data.ruc);
+                $('#edit_fecha_nacimiento').val(data.fecha_nacimiento);
                 $('#edit_nombres').val(data.nombres);
                 $('#edit_apellidos').val(data.apellidos);
+                $('#edit_ruc').val(data.ruc);
+                $('#edit_matricula').val(data.matricula);
+                $('#edit_fecha_matricula').val(data.fecha_matricula);
                 $('#span_nombre').text(data.nombres);
 
                 // Manejo de Celulares (Arreglos)

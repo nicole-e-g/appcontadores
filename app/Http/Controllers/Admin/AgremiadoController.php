@@ -23,7 +23,7 @@ class AgremiadoController extends Controller
 
         // 1. Procesamiento para DataTable Server-side
         if ($request->ajax()) {
-            $query = Agremiado::withTrashed()->select(['id', 'matricula', 'dni', 'ruc', 'nombres', 'apellidos', 'estado', 'fin_habilitacion']);
+            $query = Agremiado::select(['id', 'matricula', 'dni', 'ruc', 'nombres', 'apellidos', 'estado', 'fin_habilitacion']);
 
             return DataTables::of($query)
                 // Renderizado de etiquetas de estado con colores

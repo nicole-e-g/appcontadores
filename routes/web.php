@@ -50,7 +50,7 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
 
     Route::post('/agremiados', [AgremiadoController::class, 'store'])->name('admin.agremiados.store');
 
-    Route::get('admin/agremiados/{id}/edit', [AgremiadoController::class, 'getDatos'])->name('admin.agremiados.edit');
+    Route::get('/agremiados/{id}/edit', [AgremiadoController::class, 'getDatos'])->name('admin.agremiados.edit');
 //    Route::put('/agremiados/{agremiado}', [AgremiadoController::class, 'update'])->name('admin.agremiados.update');
 
     Route::delete('/agremiados/{agremiado}', [AgremiadoController::class, 'destroy'])->name('admin.agremiados.destroy');
