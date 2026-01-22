@@ -128,9 +128,9 @@
     <!-- Termina el navbar izquierdo-->
 
     <!-- Empieza el navbar superior-->
-    <div class="wrapper d-flex flex-column">
+    <div class="wrapper d-flex flex-column min-vh-100">
         <header class="header header-sticky p-0 mb-4">
-            <div class="container-fluid border-bottom px-4">
+            <div class="container-fluid border-bottom px-4" >
                 <button class="header-toggler" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()" style="margin-inline-start: -14px;">
                     <svg class="icon icon-lg">
                         <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-menu')}}"></use>
@@ -199,16 +199,13 @@
             </div>
             <!-- Termina el navbar superior-->
         </header>
-    </div>
 
-    <div class="wrapper d-flex flex-column min-vh-100">
         <div class="body flex-grow-1">
             <div class="container-lg px-4">
                 @yield('content')
             </div>
         </div>
     </div>
-
 
     <!-- CoreUI and necessary plugins-->
     <script src="{{ asset('vendors/@coreui/coreui-pro/js/coreui.bundle.min.js')}}"></script>
