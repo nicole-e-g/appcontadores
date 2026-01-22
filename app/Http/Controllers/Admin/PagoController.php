@@ -144,7 +144,7 @@ class PagoController extends Controller
             'dia_fin' => $fechaVencimiento ? $fechaVencimiento->endOfMonth()->format('d'): '--', // {{fines de mes}}
             'mes_fin' => $fechaVencimiento ? $fechaVencimiento->translatedFormat('F'): '---',      // {{Mes final}}
             'año_fin' => $fechaVencimiento ? $fechaVencimiento->format('Y'): '----',               // {{Año}}
-            'fecha_hoy' => \Carbon\Carbon::parse($pago->created_at)->translatedFormat('d \d\e F \d\e Y'), // {{Fecha de descarga}}
+            'fecha_hoy' => \Carbon\Carbon::parse($pago->fecha_pago)->translatedFormat('d \d\e F \d\e Y'), // {{Fecha de descarga}}
         ];
 
         $pdf = Pdf::loadView('pdf_constancia', $data);
