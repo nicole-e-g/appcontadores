@@ -42,47 +42,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($agremiados as $agremiado)
-                                    <tr class="align-middle">
-                                        <td class="text-center">
-                                            {{ $loop->iteration }}
-                                        </td>
-                                        <td>
-                                            <div class="text-nowrap">{{ $agremiado->matricula }}</div>
-                                        </td>
-                                        <td>
-                                            <div class="text-nowrap">{{ $agremiado->dni }}</div>
-                                        </td>
-                                        <td>
-                                            <div class="text-nowrap text-center">{{ $agremiado->nombres }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="text-nowrap">{{ $agremiado->apellidos }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="text-nowrap">{{ $agremiado->estado }}</div>
-                                        </td>
-                                        <td class="text-center">
-                                            @if($agremiado->fin_habilitacion)
-                                                {{ \Carbon\Carbon::parse($agremiado->fin_habilitacion)->translatedFormat('d F Y') }}
-                                            @else
-                                                <span class="text-muted">No asignado</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" href="{{ route('admin.agremiados.show', $agremiado->id) }}">Ver datos</a>
-                                                    <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#editAgremiadoModal-{{ $agremiado->id }}">Editar datos</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -172,134 +131,140 @@
             </div>
         </div>
     </div>
-    @foreach ($agremiados as $agremiado)
-        <!--Modal de actualización de agremiado-->
-        <div class="modal fade" id="editAgremiadoModal-{{ $agremiado->id }}" tabindex="-1" aria-labelledby="editModalLabel-{{ $agremiado->id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
+
+    <!-- Modal para actualizar agremiado-->
+    <div class="modal fade" id="modalEditarAgremiado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="formEditarAgremiado" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel-{{ $agremiado->id }}">Editar Agremiado: {{ $agremiado->nombres }}</h5>
-                        <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title">Editar Agremiado: <span id="span_nombre"></span></h5>
+                        <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
                     </div>
-                    <form action="{{ route('admin.agremiados.update', $agremiado) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="dni-{{ $agremiado->id}}" class="form-label">DNI:</label>
-                                    <input type="text" class="form-control" id="dni-{{ $agremiado->id }}" name="dni" value="{{ $agremiado->dni }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Fecha Nacimiento:</label>
-                                    <input type="date" class="form-control" name="fecha_nacimiento" value="{{ $agremiado->fecha_nacimiento }}" required>
-                                </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">DNI:</label>
+                                <input type="text" class="form-control" id="edit_dni" name="dni">
                             </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="nombres-{{ $agremiado->id}}" class="form-label">Nombre:</label>
-                                    <input type="text" class="form-control" id="nombres-{{ $agremiado->id}}" name="nombres" value="{{ $agremiado->nombres }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="apellidos-{{ $agremiado->id}}" class="form-label">Apellido:</label>
-                                    <input type="text" class="form-control" id="apellidos-{{ $agremiado->id}}" name="apellidos" value="{{ $agremiado->apellidos }}">
-                                </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">RUC:</label>
+                                <input type="text" class="form-control" id="edit_ruc" name="ruc" maxlength="11">
                             </div>
-
-                            <div class="mb-3">
-                                <label for="ruc-{{ $agremiado->id}}" class="form-label">RUC:</label>
-                                <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="ruc-{{ $agremiado->id}}" name="ruc" value="{{ $agremiado->ruc }}">
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="matricula-{{ $agremiado->id}}" class="form-label">N° Matricula:</label>
-                                    <input type="text" class="form-control" id="matricula-{{ $agremiado->id}}" name="matricula" value="{{ $agremiado->matricula }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Fecha Matrícula:</label>
-                                    <input type="date" class="form-control" name="fecha_matricula" value="{{ $agremiado->fecha_matricula }}" required>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="celular-{{ $agremiado->id}}" class="form-label">Celular 1:</label>
-                                    <input type="text" class="form-control" maxlength="9" pattern="[0-9]{9}" id="celular-{{ $agremiado->id}}" name="celular1" value="{{ $agremiado->celular[0] ?? '' }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="celular-{{ $agremiado->id}}" class="form-label">Celular 2:</label>
-                                    <input type="text" class="form-control" maxlength="9" pattern="[0-9]{9}" id="celular-{{ $agremiado->id}}" name="celular2" value="{{ $agremiado->celular[1] ?? '' }}" >
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label for="correo-{{ $agremiado->id}}" class="form-label">Correo 1:</label>
-                                    <input type="text" class="form-control" id="correo-{{ $agremiado->id}}" name="correo1" value="{{ $agremiado->correo[0] ?? '' }}">
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="correo-{{ $agremiado->id}}" class="form-label">Correo 2:</label>
-                                    <input type="text" class="form-control" id="correo-{{ $agremiado->id}}" name="correo2" value="{{ $agremiado->correo[1] ?? '' }}">
-                                </div>
-                            </div>
-
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <!--Modal de eliminacion de agremiado-->
-        <div class="modal fade" id="deleteModal-{{ $agremiado->id}}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ $agremiado->id }}" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
+    <!-- Modal para eliminar agremiado-->
+    <div class="modal fade" id="modalEliminarAgremiado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formEliminarAgremiado" method="POST">
+                    @csrf
+                    @method('DELETE')
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel-{{ $agremiado->id }}">Confirmar Eliminación</h5>
-                        <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title">Confirmar Eliminación</h5>
+                        <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
                     </div>
-                    <form action="{{ route('admin.agremiados.destroy', $agremiado) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <div class="modal-body">
-                            <p>¿Estás seguro de que quieres eliminar al agremiado <strong>{{ $agremiado->nombres }}</strong>?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Eliminar</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-body">
+                        <p>¿Estás seguro de que quieres eliminar al agremiado <strong id="del_nombre"></strong>?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </div>
+                </form>
             </div>
         </div>
-    @endforeach
+    </div>
 
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('vendors/datatables.net-bs5/js/dataTables.bootstrap5.min.js')}}"></script>
-    <script src="{{ asset('js/datatables.js')}}"></script>
     <script src="{{ asset('DataTables/datatables.min.js')}}"></script>
     <script>
         // Para el DataTable de agremiado
         $(document).ready(function () {
 
-            // Inicializa DataTables en la tabla con el ID 'tablaUsuarios'
+            // Inicializa DataTables en la tabla con el ID 'tablaAgremiados'
             $('#tablaAgremiados').DataTable({
-                // Opcional: Poner la tabla en español
-                pageLength: 50,
+                processing: true,
+                serverSide: true,
+                pageLength: 50,               // Arranca mostrando 50 registros por defecto
+                lengthMenu: [50, 100, 200],
+                ajax: "{{ route('admin.agremiados.index') }}", // La misma ruta del index
+                columns: [
+                    // El 'data: null' con render ayuda a poner el número correlativo
+                    { data: null, render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }, class: 'text-center',
+                        searchable: false,
+                        orderable: false},
+                    { data: 'matricula', name: 'matricula', class: 'text-center' },
+                    { data: 'dni', name: 'dni', class: 'text-center' },
+                    { data: 'nombres', name: 'nombres' },
+                    { data: 'apellidos', name: 'apellidos' },
+                    { data: 'estado', name: 'estado', class: 'text-center' },
+                    { data: 'fin_habilitacion', name: 'fin_habilitacion', class: 'text-center' },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        class: 'text-center'
+                    }
+                ],
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
-                    emptyTable: "No hay pagos registrados para este agremiado",
+                    emptyTable: "No hay agremiados registrados",
                     zeroRecords: "No se encontraron resultados",
                 }
             });
 
         });
+
+        // Función para abrir modal de edición
+        function editarAgremiado(id) {
+            // Petición AJAX al controlador para obtener los datos
+            $.get('/admin/agremiados/' + id + '/edit', function(data) {
+                // Datos básicos
+                $('#edit_dni').val(data.dni);
+                $('#edit_ruc').val(data.ruc);
+                $('#edit_nombres').val(data.nombres);
+                $('#edit_apellidos').val(data.apellidos);
+                $('#span_nombre').text(data.nombres);
+
+                // Manejo de Celulares (Arreglos)
+                // Usamos la validación 'data.celular ? data.celular[0] : ""' por seguridad
+                $('#edit_celular1').val(data.celular && data.celular[0] ? data.celular[0] : '');
+                $('#edit_celular2').val(data.celular && data.celular[1] ? data.celular[1] : '');
+
+                // Manejo de Correos (Arreglos)
+                $('#edit_correo1').val(data.correo && data.correo[0] ? data.correo[0] : '');
+                $('#edit_correo2').val(data.correo && data.correo[1] ? data.correo[1] : '');
+
+                // Actualizamos la ruta del formulario
+                $('#formEditarAgremiado').attr('action', '/admin/agremiados/' + id);
+
+                // Abrimos el modal
+                $('#modalEditarAgremiado').modal('show');
+            });
+        }
+
+        // Función para abrir modal de eliminación
+        function eliminarAgremiado(id, nombre) {
+            $('#del_nombre').text(nombre);
+            $('#formEliminarAgremiado').attr('action', '/admin/agremiados/' + id);
+            $('#modalEliminarAgremiado').modal('show');
+        }
     </script>
 @endpush
