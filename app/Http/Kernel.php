@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
         'nocache' => \App\Http\Middleware\NoCache::class,
+        'superadmin'=> \App\Http\Middleware\CheckSuperadmin::class,
     ];
 }

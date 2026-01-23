@@ -2,9 +2,9 @@
 
 @section('content')
     @if (session('success'))
-        <div class="alert alert-success" role="alert" id="success-alert">
+        <div class="alert alert-success alert-dismissible fade show border-0" role="alert" id="success-alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
     @if ($errors->any())
@@ -73,7 +73,7 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>
@@ -91,7 +91,7 @@
                     @csrf
                     <div class="modal-body">
                         <p>Ingresa los datos para el nuevo usuario.</p>
-                                                                                    
+
                         <div class="mb-3">
                             <label for="nombre_crear" class="form-label">Nombre:</label>
                             <input type="text" class="form-control" id="nombre_crear" name="nombre" placeholder="Ej: Juan" required>
@@ -120,7 +120,7 @@
                             <label for="password_crear" class="form-label">Contraseña:</label>
                             <input type="password" class="form-control" id="password_crear" name="password" required>
                         </div>
-                                                                                    
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
@@ -142,10 +142,10 @@
                     </div>
                     <form action="{{ route('admin.usuarios.update', $usuario) }}" method="POST">
                         @csrf
-                        @method('PUT') 
+                        @method('PUT')
                         <div class="modal-body">
                             <p>Estás editando los datos de <strong>{{ $usuario->user }}</strong>.</p>
-                                                                                    
+
                             <div class="mb-3">
                                 <label for="nombre-{{ $usuario->id_administrador }}" class="form-label">Nombre:</label>
                                 <input type="text" class="form-control" id="nombre-{{ $usuario->id_administrador }}" name="nombre" value="{{ $usuario->nombre }}">
@@ -174,7 +174,7 @@
                                 <label for="rol-{{ $usuario->id_administrador }}" class="form-label">Contraseña:</label>
                                 <input type="text" class="form-control" id="password-{{ $usuario->id_administrador }}" name="password" placeholder="Dejar en blanco para no cambiar">
                             </div>
-                                                                                    
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
@@ -184,7 +184,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!--Modal de eliminacion de usuario-->
         <div class="modal fade" id="deleteModal-{{ $usuario->id_administrador }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ $usuario->id_administrador }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -197,7 +197,7 @@
                         @csrf
                         @method('DELETE')
                         <div class="modal-body">
-                            <p>¿Estás seguro de que quieres eliminar al usuario <strong>{{ $usuario->user }}</strong>?</p>                                                            
+                            <p>¿Estás seguro de que quieres eliminar al usuario <strong>{{ $usuario->user }}</strong>?</p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
@@ -217,7 +217,7 @@
     <script>
         // Para el DataTable de usuarios
         $(document).ready(function () {
-            
+
             // Inicializa DataTables en la tabla con el ID 'tablaUsuarios'
             $('#tablaUsuarios').DataTable({
                 // Opcional: Poner la tabla en español

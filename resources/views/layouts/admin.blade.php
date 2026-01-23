@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        /* Por defecto, ocultamos el logo oscuro */
+        .logo-dark {
+            display: none !important;
+        }
+
+        /* Cuando el tema es oscuro, ocultamos el claro y mostramos el oscuro */
+        [data-coreui-theme="dark"] .logo-light {
+            display: none !important;
+        }
+
+        [data-coreui-theme="dark"] .logo-dark {
+            display: block !important;
+        }
+    </style>
     <base href="./">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -43,7 +58,15 @@
         <div class="sidebar-header border-bottom">
             <div class="sidebar-brand">
                 <!-- Poner logo acá-->
-                <img src="{{ asset('assets/img/Logotipo_Colegio.png') }}" class="sidebar-brand-full" style="width: auto; max-width: 90%; object-fit: contain;" alt="Logo Colegio">
+                <img src="{{ asset('assets/img/Logotipo_Colegio.png') }}"
+                     class="sidebar-brand-full logo-light"
+                     style="width: auto; max-width: 90%; object-fit: contain;"
+                     alt="Logo Colegio Light">
+
+                <img src="{{ asset('assets/img/Logotico_Colegio_white.png') }}"
+                     class="sidebar-brand-full logo-dark"
+                     style="width: auto; max-width: 90%; object-fit: contain;"
+                     alt="Logo Colegio Dark">
             </div>
             <button class="btn-close d-lg-none" type="button" data-coreui-theme="dark" aria-label="Close" onclick="coreui.Sidebar.getInstance(document.querySelector(&quot;#sidebar&quot;)).toggle()"></button>
         </div>
@@ -54,11 +77,13 @@
                 </svg> Dashboard</a>
             </li>
             <li class="nav-title">Inicio</li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios.index') }}">
-                <svg class="nav-icon">
-                    <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
-                </svg> Usuarios</a>
-            </li>
+            @if(auth()->guard('admin')->user()->rol === 'superadmin')
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios.index') }}">
+                    <svg class="nav-icon">
+                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-user') }}"></use>
+                    </svg> Usuarios</a>
+                </li>
+            @endif
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.agremiados.index') }}">
                 <svg class="nav-icon">
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/brand.svg#cib-slideshare') }}"></use>
@@ -103,9 +128,9 @@
     <!-- Termina el navbar izquierdo-->
 
     <!-- Empieza el navbar superior-->
-    <div class="wrapper d-flex flex-column">
+    <div class="wrapper d-flex flex-column min-vh-100">
         <header class="header header-sticky p-0 mb-4">
-            <div class="container-fluid border-bottom px-4">
+            <div class="container-fluid border-bottom px-4" >
                 <button class="header-toggler" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()" style="margin-inline-start: -14px;">
                     <svg class="icon icon-lg">
                         <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-menu')}}"></use>
@@ -113,10 +138,9 @@
                 </button>
                 <ul class="header-nav d-none d-lg-flex">
                     <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios.index') }}">Usuarios</a></li>
                 </ul>
                 <ul class="header-nav ms-auto">
-            
+
                 </ul>
                 <ul class="header-nav">
                     <li class="nav-item py-1">
@@ -175,16 +199,13 @@
             </div>
             <!-- Termina el navbar superior-->
         </header>
-    </div>
 
-    <div class="wrapper d-flex flex-column min-vh-100">
         <div class="body flex-grow-1">
             <div class="container-lg px-4">
-                @yield('content') 
+                @yield('content')
             </div>
         </div>
     </div>
-
 
     <!-- CoreUI and necessary plugins-->
     <script src="{{ asset('vendors/@coreui/coreui-pro/js/coreui.bundle.min.js')}}"></script>

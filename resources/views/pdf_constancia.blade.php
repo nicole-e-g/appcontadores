@@ -7,12 +7,12 @@
         @page {
             margin: 0cm 0cm; /* Importante para la barra azul pegada al borde */
         }
-        
-        body { 
-            font-family: 'Helvetica', sans-serif; 
+
+        body {
+            font-family: 'Helvetica', sans-serif;
             /* El margen superior debe ser estrictamente mayor que el alto del header */
-            margin-top: 4.2cm; 
-            margin-bottom: 2cm; 
+            margin-top: 4.2cm;
+            margin-bottom: 2cm;
             margin-left: 2cm;
             margin-right: 2cm;
             line-height: 1.4;
@@ -33,8 +33,6 @@
 
         .header-img {
             width: 100%;
-            height: 100%; /* Forzamos a que encaje en el contenedor */
-            object-fit: cover;
         }
 
         /* 3. Footer Fijo */
@@ -71,15 +69,16 @@
             font-weight: bold;
             font-size: 15pt;
             margin-bottom: 5px;
+            margin-top: 25px;
         }
         .decano-title {
             text-align: center;
             font-weight: bold;
             font-size: 11pt;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .nombre-contador {
-            color: black; /* Rojo profesional */
+            color: black;
             font-size: 18pt;
             text-align: center;
             font-weight: bold;
@@ -99,17 +98,17 @@
     <div class="decano-title">EL DECANO DEL COLEGIO DE CONTADORES PÚBLICOS DE HUÁNUCO</div>
 
     <div class="content">
-        <p>Hace constar que:</p>
-        
+        <p style="font-size: 18px;">Hace constar que:</p>
+
         <div class="nombre-contador">{{ $nombres }}</div>
-        
-        <p>Contador Público Colegiado con matrícula N° <span class="data-highlight">{{ $matricula }}</span> se encuentra <span class="data-highlight">{{ $estado }}</span> para el ejercicio de la profesión de Contador Público en concordancia con el Art. 2 de la ley N° 28951 de Profesionalización del Contador Público y el Art. 6° del estatuto de nuestro Colegio.</p>
 
-        <p>La presente constancia de habilitación profesional tiene vigencia hasta el <span class="data-highlight">{{ $dia_fin }}</span> de <span class="data-highlight">{{ $mes_fin }}</span> del <span class="data-highlight">{{ $año_fin }}</span>.</p>
+        <p style="text-align: justify; font-size: 18px" >Contador Público Colegiado con matrícula N° <span class="data-highlight">{{ $matricula }}</span> se encuentra <span class="data-highlight">{{ $estado }}</span> para el ejercicio de la profesión de Contador Público en concordancia con el Art. 2 de la ley N° 28951 de Profesionalización del Contador Público y el Art. 6° del estatuto de nuestro Colegio.</p>
 
-        <p>Se expide la presente, para los fines que estime conveniente.</p>
-        
-        <p style="text-align: right; margin-top: 40px;">
+        <p style="font-size: 18px;">La presente constancia de habilitación profesional tiene vigencia hasta el <span class="data-highlight">{{ $dia_fin }}</span> de <span class="data-highlight">{{ $mes_fin }}</span> del <span class="data-highlight">{{ $año_fin }}</span>.</p>
+
+        <p style="font-size: 18px;">Se expide la presente, para los fines que estime conveniente.</p>
+
+        <p style="text-align: right; margin-top: 40px; font-size: 18px">
             Huánuco, <span class="data-highlight">{{ $fecha_hoy }}</span>
         </p>
     </div>
@@ -124,7 +123,7 @@
                 </td>
                 <td style="text-align: right; width: 40%;">
                     Cel: 962 648 190<br>
-                    correo@gmail.com
+                    ccphuanuco2324@gmail.com
                 </td>
             </tr>
         </table>

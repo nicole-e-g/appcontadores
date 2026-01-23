@@ -2,9 +2,9 @@
 
 @section('content')
     @if (session('success'))
-        <div class="alert alert-success" role="alert" id="success-alert">
+        <div class="alert alert-success alert-dismissible fade show border-0" role="alert" id="success-alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
     @if ($errors->any())
@@ -38,7 +38,7 @@
                         <h5 class="text-primary mb-3">Colegiatura</h5>
                         <p><strong>Número de Matrícula:</strong> {{ $agremiado->matricula }}</p>
                         <p><strong>Fecha de Matrícula:</strong> {{ \Carbon\Carbon::parse($agremiado->fecha_matricula)->format('d/m/Y') }}</p>
-                        <p><strong>Estado Actual:</strong> 
+                        <p><strong>Estado Actual:</strong>
                             <span class="badge {{ $agremiado->estado == 'Habilitado' ? 'bg-success' : 'bg-danger' }}">
                                 {{ $agremiado->estado }}
                             </span>
@@ -165,7 +165,7 @@
                         </button>
                     </div>
                     <div class="table-responsive">
-                        <table table id="tablaConstancia" class="table border mb-0">
+                        <table id="tablaConstancia" class="table border mb-0">
                             <thead class="fw-semibold text-nowrap">
                                 <tr class="align-middle">
                                     <th class="bg-body-secondary text-center">N°</th>
@@ -205,6 +205,7 @@
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     @if($pago->estado == 'Pagado')
+                                                        <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#editModalConstancia-{{ $pago->id }}">Editar</a>
                                                         <a class="dropdown-item" href="{{ route('admin.pagos.descargar', $pago) }}"> Descargar </a>
                                                         <a class="dropdown-item text-danger" data-coreui-i18n="anular" data-coreui-toggle="modal" data-coreui-target="#anularModal-{{ $pago->id }}">Anular pago</a>
                                                     @else
@@ -237,10 +238,8 @@
                 <form action="{{ route('admin.pagos.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
-                        <p>Ingresa los datos del pago.</p>
-
                         <input type="hidden" name="agremiado_id" value="{{ $agremiado->id }}">
-                                                                                    
+
                         <div class="mb-3">
                             <label for="nombre_crear" class="form-label">Año:</label>
                             <input type="text" class="form-control" name="año" value="{{ date('Y') }}" readonly>
@@ -248,18 +247,24 @@
 
                         <div class="mb-3">
                             <label for="apellido_crear" class="form-label">Mes de Inicio:</label>
-                            <select name="mes_inicio" class="form-select" required>
-                                @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                    <option value="{{ $index + 1 }}">{{ $mes }}</option>
+                            <select name="mes_inicio" class="form-select">
+                                @foreach(range(1, 12) as $m)
+                                    <option value="{{ $m }}"
+                                        {{ $m == $siguienteMes ? 'selected' : '' }}
+                                        {{ $m < $siguienteMes ? 'disabled' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $m)->translatedFormat('F') }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <label for="dni_crear" class="form-label">Mes Final:</label>
-                            <select name="mes_final" class="form-select" required>
-                                @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                    <option value="{{ $index + 1 }}">{{ $mes }}</option>
+                            <select name="mes_final" id="mes_final" class="form-select">
+                                @foreach(range(1, 12) as $m)
+                                    <option value="{{ $m }}" {{ $m == $siguienteMes ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $m)->translatedFormat('F') }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -273,9 +278,9 @@
                                 <label class="form-label">Monto a Pagar (S/):</label>
                                 <div class="input-group">
                                     <span class="input-group-text">S/</span>
-                                    <input type="number" name="monto" class="form-control" value="00.00" step="0.01" min="0" required>
+                                    <input type="number" name="monto" class="form-control" placeholder="00.00" step="0.01" min="0" required>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
 
                         <input type="hidden" name="tipo_pago" value="Habilitacion">
@@ -301,10 +306,8 @@
                     </div>
                     <form action="{{ route('admin.pagos.update', $pago) }}" method="POST">
                         @csrf
-                        @method('PUT') 
+                        @method('PUT')
                         <div class="modal-body">
-                            <p>Estás editando los datos del pago <strong>{{ $pago->comprobante }}</strong>.</p>
-
                             <div class="mb-3">
                                 <label for="año_crear" class="form-label">Año:</label>
                                 <input type="text" class="form-control" name="año" value="{{ date('Y') }}" readonly>
@@ -325,14 +328,14 @@
                                     <label class="form-label">Mes Final:</label>
                                     <select name="mes_final" class="form-select" required>
                                         @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                            <option value="{{ $index + 1 }}" {{ $pago->mes_final == ($index + 1) ? 'selected' : '' }}>
+                                            <option value="{{ $index + 1 }}" {{ $pago->mes_inicio == ($index + 1) ? 'selected' : '' }}>
                                                 {{ $mes }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
-                                                                                    
+
                             <div class="mb-3">
                                 <label for="nombre-{{ $pago->id }}" class="form-label">Comprobante:</label>
                                 <input type="text" class="form-control" id="comprobante-{{ $pago->id }}" name="comprobante" value="{{ $pago->comprobante }}">
@@ -345,7 +348,7 @@
                                     <input type="number" class="form-control" id="monto-{{ $pago->id }}" name="monto" value="{{ $pago->monto }}" step="0.01" min="0" required>
                                 </div>
                             </div>
-                                                                                    
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
@@ -355,7 +358,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!--Modal de anulacion de pago-->
         <div class="modal fade" id="anularModal-{{ $pago->id }}" tabindex="-1" aria-labelledby="anularModalLabel-{{ $pago->id }}" aria-hidden="true">
             <div class="modal-dialog">
@@ -384,11 +387,50 @@
             </div>
         </div>
 
+        <!--Modal de actualización de pago constancia-->
+        <div class="modal fade" id="editModalConstancia-{{ $pago->id }}" tabindex="-1" aria-labelledby="editModalConstanciaLabel-{{ $pago->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel-{{ $pago->id }}">Editar Pago: {{ $pago->comprobante }}</h5>
+                        <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('admin.pagos.update', $pago) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <input type="hidden" name="tipo_pago" value="Constancia">
+
+                            <div class="mb-3">
+                                <label for="fecha_pago-{{ $pago->id }}" class="form-label">Fecha de Pago:</label>
+                                <input type="date" name="fecha_pago" value="{{ $pago->fecha_pago }}" class="form-control" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="comprobante-{{ $pago->id }}" class="form-label">Comprobante:</label>
+                                <input type="text" class="form-control" id="comprobante-{{ $pago->id }}" name="comprobante" value="{{ $pago->comprobante }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="monto-{{ $pago->id }}" class="form-label">Monto:</label>
+                                <input type="number" class="form-control" id="monto-{{ $pago->id }}" name="monto" value="{{ $pago->monto }}" step="0.01" min="0" required>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     <!--Modal de motivo de anulacion-->
     <div class="modal fade" id="modalVerMotivo-{{ $pago->id }}" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-light">
+                <div class="modal-header">
                     <h5 class="modal-title">Detalle de Anulación - {{ $pago->comprobante }}</h5>
                     <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -409,7 +451,7 @@
                     </div>
                     <div class="mb-0">
                         <label class="fw-bold">Motivo:</label>
-                        <div class="p-3 bg-light border rounded">
+                        <div class="p-3 border rounded">
                             {{ $pago->motivo_anulacion }}
                         </div>
                     </div>
@@ -424,7 +466,7 @@
 
     <!--Modal de pago de constancia-->
     <div class="modal fade" id="modalNuevaConstancia" tabindex="-1" aria-labelledby="constanciaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title" id="constanciaModalLabel">Registrar Pago de Constancia / Trámite</h5>
@@ -472,7 +514,7 @@
     <script>
         // Para el DataTable de agremiado
         $(document).ready(function () {
-            
+
             // Inicializa DataTables en la tabla con el ID 'tablaUsuarios'
             $('#tablaCuotas').DataTable({
                 // Opcional: Poner la tabla en español
@@ -492,6 +534,29 @@
                 }
             });
 
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Recuperar la última pestaña guardada
+            const activeTab = localStorage.getItem('activeAgremiadoTab');
+
+            if (activeTab) {
+                // 2. Si existe, activar esa pestaña automáticamente
+                const tabTrigger = document.querySelector(`[data-coreui-target="${activeTab}"]`);
+                if (tabTrigger) {
+                    const tab = new coreui.Tab(tabTrigger);
+                    tab.show();
+                }
+            }
+
+            // 3. Escuchar cada vez que el usuario hace clic en una pestaña para guardar el ID
+            const tabLinks = document.querySelectorAll('[data-coreui-toggle="tab"]');
+            tabLinks.forEach(link => {
+                link.addEventListener('shown.coreui.tab', function (event) {
+                    const tabId = event.target.getAttribute('data-coreui-target');
+                    localStorage.setItem('activeAgremiadoTab', tabId);
+                });
+            });
         });
     </script>
 @endpush

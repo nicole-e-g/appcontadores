@@ -5,82 +5,141 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Agremiado;
+use App\Models\Pago;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class AgremiadoController extends Controller
 {
-    public function index()
+    /**
+     * Listado principal optimizado para miles de registros
+     */
+    public function index(Request $request)
     {
+        // Actualización masiva de estados basada en la fecha de fin de habilitación
         Agremiado::where('estado', 'Habilitado')
-             ->where('fin_habilitacion', '<=', Carbon::now())
-             ->update(['estado' => 'Inhabilitado']);
-        // Traemos todos los agremiados que NO estén borrados (SoftDelete automático)
-        $agremiados = Agremiado::all(); 
-        return view('listadoagremiados', compact('agremiados'));
+            ->where('fin_habilitacion', '<=', Carbon::now())
+            ->update(['estado' => 'Inhabilitado']);
+
+        // 1. Procesamiento para DataTable Server-side
+        if ($request->ajax()) {
+            $query = Agremiado::select(['id', 'matricula', 'dni', 'ruc', 'nombres', 'apellidos', 'estado', 'fin_habilitacion']);
+
+            return DataTables::of($query)
+                // Renderizado de etiquetas de estado con colores
+                ->editColumn('estado', function($row) {
+                    $clase = ($row->estado == 'Habilitado') ? 'bg-success' : 'bg-danger';
+                    return '<span class="badge ' . $clase . '">' . strtoupper($row->estado) . '</span>';
+                })
+                // Formateo de fecha de habilitación
+                ->editColumn('fin_habilitacion', function($row) {
+                    return $row->fin_habilitacion
+                        ? Carbon::parse($row->fin_habilitacion)->format('d/m/Y')
+                        : '<span class="text-muted">No registra</span>';
+                })
+                // Columna de Acción con Dropdown de CoreUI
+                ->addColumn('action', function($row) {
+                    $iconPath = asset('vendors/@coreui/icons/svg/free.svg#cil-options');
+                    return '
+                    <div class="dropdown">
+                        <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg class="icon" style="width:20px; height:20px;">
+                                <use xlink:href="'.$iconPath.'"></use>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="'.route('admin.agremiados.show', $row->id).'">Ver Detalle</a>
+                            <button class="dropdown-item" onclick="editarAgremiado('.$row->id.')">Editar Datos</button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item text-danger" onclick="eliminarAgremiado('.$row->id.', \''.$row->nombres.'\')">Eliminar</button>
+                        </div>
+                    </div>';
+                })
+                ->rawColumns(['estado', 'fin_habilitacion', 'action'])
+                ->make(true);
+        }
+
+        // Enviamos la vista vacía; el script se encarga de los datos
+        return view('listadoagremiados');
+    }
+
+    /**
+     * Provee datos JSON para alimentar los modales dinámicos
+     */
+    public function getDatos($id)
+    {
+        $agremiado = Agremiado::findOrFail($id);
+        return response()->json($agremiado);
     }
 
     public function store(Request $request)
     {
-        // 1. Validar los datos
         $data = $request->validate([
             'matricula'        => 'required|string|unique:agremiados',
-            'fecha_matricula'  => 'required|date',
             'dni'              => 'required|string|size:8|unique:agremiados',
+            'ruc'              => 'nullable|string|size:11|unique:agremiados', // Validación RUC
+            'fecha_matricula'  => 'required|date',
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
         ]);
 
-        // 2. Juntamos los dos inputs en uno solo
-        // array_filter quita los que estén vacíos (si solo puso el celular 1, el 2 se ignora)
-        $data['celular'] = array_filter([$request->celular1, $request->celular2]);
-        $data['correo']  = array_filter([$request->correo1, $request->correo2]);
+        // Mapeo de campos múltiples a arreglos
+        $data['celular'] = array_values(array_filter([$request->celular1, $request->celular2]));
+        $data['correo']  = array_values(array_filter([$request->correo1, $request->correo2]));
 
-        // 3. Guardamos (Laravel lo meterá al único campo de la BD como un texto especial)
         Agremiado::create($data);
 
-        // 3. Redirigir de vuelta a la lista con un mensaje de éxito
         return redirect()->back()->with('success', '¡Agremiado creado exitosamente!');
     }
 
     public function update(Request $request, Agremiado $agremiado)
     {
-        // 1. Validar los datos que llegan del formulario
         $data = $request->validate([
             'matricula'        => 'required|string|unique:agremiados,matricula,' . $agremiado->id,
             'dni'              => 'required|string|size:8|unique:agremiados,dni,' . $agremiado->id,
+            'ruc'              => 'nullable|string|size:11|unique:agremiados,ruc,' . $agremiado->id,
             'fecha_matricula'  => 'required|date',
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
         ]);
 
-        // 2. Procesar celulares y correos (como hicimos en el store)
         $data['celular'] = array_values(array_filter([$request->celular1, $request->celular2]));
         $data['correo']  = array_values(array_filter([$request->correo1, $request->correo2]));
 
-        // 3. Actualizar la sede en la base de datos
         $agremiado->update($data);
 
-        // 4. Redirigir de vuelta a la página anterior con un mensaje de éxito
-       return redirect()->back()->with('success', '¡Agremiado actualizado exitosamente!');
+        return redirect()->back()->with('success', '¡Agremiado actualizado exitosamente!');
     }
 
     public function show(Agremiado $agremiado)
     {
-        // 1. Buscamos los pagos que pertenecen a este agremiado
-        // Usamos el ID del agremiado que ya tenemos en la mano
-        $pagos = \App\Models\Pago::where('agremiado_id', $agremiado->id)->get();
+        // Obtención del historial de pagos (Paginación interna de Eloquent)
+        $pagos = $agremiado->pagos()->orderBy('id', 'desc')->get();
 
-        // 2. Enviamos AMBAS cosas a la vista
-        // 'agremiado' para los datos de arriba (DNI, Nombre, etc.)
-        // 'pagos' para la tabla de abajo (Historial de Cuotas)
-        return view('detalleagramiados', compact('agremiado', 'pagos'));
+        // Consulta corregida para evitar el error de Collection::orderBy
+        $ultimo = Pago::where('agremiado_id', $agremiado->id)
+            ->where('tipo_pago', 'Habilitacion')
+            ->where('estado', 'Pagado')
+            ->orderBy('año', 'desc')
+            ->orderBy('mes_final', 'desc')
+            ->first();
+
+        // Lógica de cálculo del siguiente periodo de pago
+        $siguienteMes = $ultimo ? ($ultimo->mes_final + 1) : 1;
+        $siguienteAño = $ultimo ? $ultimo->año : date('Y');
+
+        if ($siguienteMes > 12) {
+            $siguienteMes = 1;
+            $siguienteAño++;
+        }
+
+        return view('detalleagramiados', compact('agremiado', 'pagos', 'siguienteMes', 'siguienteAño'));
     }
 
     public function destroy($id)
     {
-        // Esto ejecutará el Soft Delete que configuramos en el modelo
         Agremiado::findOrFail($id)->delete();
         return back()->with('success', 'Agremiado eliminado correctamente');
     }

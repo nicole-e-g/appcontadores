@@ -11,14 +11,15 @@ class Agremiado extends Model
     use HasFactory, SoftDeletes;
     protected $fillable = [
         'matricula',
-        'fecha_matricula', 
-        'dni', 
-        'nombres', 
+        'fecha_matricula',
+        'dni',
+        'ruc',
+        'nombres',
         'apellidos',
         'fecha_nacimiento',
-        'celular',  
+        'celular',
         'estado',
-        'correo', 
+        'correo',
         'fin_habilitacion'
     ];
 
