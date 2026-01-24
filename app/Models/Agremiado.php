@@ -40,4 +40,12 @@ class Agremiado extends Model
     {
         return $this->hasMany(Pago::class, 'agremiado_id');
     }
+
+    public function getSexoAttribute($value)
+    {
+        if ($value === 'F') {
+            return 'Femenino';
+        }
+        return ($value === 'M') ? 'Masculino' : '';
+    }
 }

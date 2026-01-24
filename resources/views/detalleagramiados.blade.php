@@ -33,7 +33,7 @@
                         <p><strong>DNI:</strong> {{ $agremiado->dni }}</p>
                         <p><strong>RUC:</strong> {{ $agremiado->ruc }}</p>
                         <p><strong>Fecha de Nacimiento:</strong> {{ \Carbon\Carbon::parse($agremiado->fecha_nacimiento)->format('d/m/Y') }}</p>
-                        <p><strong>Sexo:</strong> {{ $agremiado->sexo == 'F' ? 'Femenino' : 'Masculino' }}</p>
+                        <p><strong>Sexo:</strong> {{ $agremiado->sexo }}</p>
                     </div>
 
                     <div class="col-md-6 ps-4">
