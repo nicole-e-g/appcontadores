@@ -18,7 +18,7 @@ class PagoController extends Controller
         $request->validate([
             'agremiado_id' => 'required|exists:agremiados,id',
             'tipo_pago'    => 'required|in:Habilitacion,Constancia',
-            'año'          => 'required_if:tipo_pago,Habilitacion|nullable|integer',
+            'año'          => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:2000,2999',
             'mes_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'mes_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'comprobante'  => 'required|string',

@@ -241,13 +241,15 @@
                         <input type="hidden" name="agremiado_id" value="{{ $agremiado->id }}">
 
                         <div class="mb-3">
-                            <label for="nombre_crear" class="form-label">Año:</label>
-                            <input type="text" class="form-control" name="año" value="{{ date('Y') }}" readonly>
+                            <label for="año_crear" class="form-label">Año:</label>
+                            <input type="number" id="input_año_pago" class="form-control" maxlength="4" name="año" value="{{ date('Y') }}" step="1" placeholder="YYYY" min="2000" max="2999"
+                                   data-siguiente-mes="{{ $siguienteMes }}"
+                                   data-siguiente-año="{{ $siguienteAño }}">
                         </div>
 
                         <div class="mb-3">
-                            <label for="apellido_crear" class="form-label">Mes de Inicio:</label>
-                            <select name="mes_inicio" class="form-select">
+                            <label for="mes_inicio_crear" class="form-label">Mes de Inicio:</label>
+                            <select id="select_mes_inicio" name="mes_inicio" class="form-select">
                                 @foreach(range(1, 12) as $m)
                                     <option value="{{ $m }}"
                                         {{ $m == $siguienteMes ? 'selected' : '' }}
@@ -259,7 +261,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="dni_crear" class="form-label">Mes Final:</label>
+                            <label for="mes_final_crear" class="form-label">Mes Final:</label>
                             <select name="mes_final" id="mes_final" class="form-select">
                                 @foreach(range(1, 12) as $m)
                                     <option value="{{ $m }}" {{ $m == $siguienteMes ? 'selected' : '' }}>
@@ -556,6 +558,34 @@
                     const tabId = event.target.getAttribute('data-coreui-target');
                     localStorage.setItem('activeAgremiadoTab', tabId);
                 });
+            });
+        });
+
+        document.getElementById('input_año_pago').addEventListener('input', function() {
+            const añoIngresado = parseInt(this.value);
+            const sigMes = parseInt(this.dataset.siguienteMes);
+            const sigAño = parseInt(this.dataset.siguienteAño);
+            const selectMes = document.getElementById('select_mes_inicio');
+            const opciones = selectMes.querySelectorAll('option');
+
+            opciones.forEach(option => {
+                const valorMes = parseInt(option.value);
+
+                if (añoIngresado > sigAño) {
+                    // ESCENARIO A: Año futuro -> Apertura total de meses
+                    option.disabled = false;
+                } else if (añoIngresado === sigAño) {
+                    // ESCENARIO B: Es el año de la deuda -> Bloquear meses ya pagados
+                    option.disabled = (valorMes < sigMes);
+
+                    // Si el mes seleccionado quedó bloqueado, saltar al primer mes disponible
+                    if (selectMes.value < sigMes) {
+                        selectMes.value = sigMes;
+                    }
+                } else {
+                    // ESCENARIO C: Año pasado -> Apertura total (opcional para regularizaciones)
+                    option.disabled = false;
+                }
             });
         });
     </script>
