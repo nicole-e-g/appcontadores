@@ -85,9 +85,19 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="ruc_crear" class="form-label">RUC:</label>
-                            <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="ruc_crear" name="ruc" placeholder="Ej: 10254785041" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="ruc_crear" class="form-label">RUC:</label>
+                                <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="ruc_crear" name="ruc" placeholder="Ej: 10254785041" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="sexo_crear" class="form-label">Sexo:</label>
+                                <select name="sexo" class="form-select" required>
+                                    <option value="">Seleccione sexo...</option>
+                                    <option value="F">Mujer</option>
+                                    <option value="M">Varón</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -121,6 +131,15 @@
                                 <label for="correo2_crear" class="form-label">Correo 2:</label>
                                 <input type="text" class="form-control" id="correo2_crear" name="correo2" >
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sede_crear" class="form-label">Sede:</label>
+                            <select name="sede" class="form-select" required>
+                                <option value="">Seleccione sede...</option>
+                                <option value="Huánuco">Huánuco</option>
+                                <option value="Tingo María">Tingo María</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -166,9 +185,19 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="edit_ruc" class="form-label">RUC:</label>
-                            <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="edit_ruc" name="ruc">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="edit_ruc" class="form-label">RUC:</label>
+                                <input type="text" class="form-control" maxlength="11" pattern="[0-9]{11}" id="edit_ruc" name="ruc">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_sexo" class="form-label">Sexo:</label>
+                                <select name="sexo" id="edit_sexo" class="form-select">
+                                    <option value="">Seleccione...</option>
+                                    <option value="F">Mujer</option>
+                                    <option value="M">Varón</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -202,6 +231,15 @@
                                 <label for="edit_correo2" class="form-label">Correo 2:</label>
                                 <input type="text" class="form-control" id="edit_correo2" name="correo2">
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="edit_sede" class="form-label">Sede:</label>
+                            <select name="sede" id="edit_sede" class="form-select">
+                                <option value="">Seleccione sede...</option>
+                                <option value="Huánuco">Huánuco</option>
+                                <option value="Tingo María">Tingo María</option>
+                            </select>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -293,6 +331,8 @@
                 $('#edit_ruc').val(data.ruc);
                 $('#edit_matricula').val(data.matricula);
                 $('#edit_fecha_matricula').val(data.fecha_matricula);
+                $('#edit_sexo').val(data.sexo);
+                $('#edit_sede').val(data.sede);
                 $('#span_nombre').text(data.nombres);
 
                 // Manejo de Celulares (Arreglos)

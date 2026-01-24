@@ -16,6 +16,8 @@ class Agremiado extends Model
         'ruc',
         'nombres',
         'apellidos',
+        'sexo',
+        'sede',
         'fecha_nacimiento',
         'celular',
         'estado',

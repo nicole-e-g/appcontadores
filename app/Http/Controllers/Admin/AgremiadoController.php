@@ -76,6 +76,8 @@ class AgremiadoController extends Controller
     {
         $data = $request->validate([
             'matricula'        => 'required|string|unique:agremiados',
+            'sexo'             => 'required|in:F,M', // Valida que solo sea F o M
+            'sede'             => 'required|in:Huánuco,Tingo María', // Debe coincidir con tu migración
             'dni'              => 'required|string|size:8|unique:agremiados',
             'ruc'              => 'nullable|string|size:11|unique:agremiados', // Validación RUC
             'fecha_matricula'  => 'required|date',
@@ -99,6 +101,8 @@ class AgremiadoController extends Controller
             'matricula'        => 'required|string|unique:agremiados,matricula,' . $agremiado->id,
             'dni'              => 'required|string|size:8|unique:agremiados,dni,' . $agremiado->id,
             'ruc'              => 'nullable|string|size:11|unique:agremiados,ruc,' . $agremiado->id,
+            'sexo'             => 'required|in:F,M', // Valida que solo sea F o M
+            'sede'             => 'required|in:Huánuco,Tingo María',
             'fecha_matricula'  => 'required|date',
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
