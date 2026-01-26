@@ -315,7 +315,9 @@
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="año_crear" class="form-label">Año:</label>
-                                <input type="text" class="form-control" name="año" value="{{ date('Y') }}" readonly>
+                                <input type="number" id="input_año_pago" class="form-control" maxlength="4" name="año" value="{{ $pago->año }}" step="1" placeholder="YYYY" min="2000" max="2999"
+                                       data-siguiente-mes="{{ $siguienteMes }}"
+                                       data-siguiente-año="{{ $siguienteAño }}">
                             </div>
 
                             <div class="row">
@@ -333,7 +335,7 @@
                                     <label class="form-label">Mes Final:</label>
                                     <select name="mes_final" class="form-select" required>
                                         @foreach(['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $mes)
-                                            <option value="{{ $index + 1 }}" {{ $pago->mes_inicio == ($index + 1) ? 'selected' : '' }}>
+                                            <option value="{{ $index + 1 }}" {{ $pago->mes_final == ($index + 1) ? 'selected' : '' }}>
                                                 {{ $mes }}
                                             </option>
                                         @endforeach
