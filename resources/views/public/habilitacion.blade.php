@@ -35,10 +35,10 @@
                             @if($agremiado->estado == 'Habilitado')
                                 <div class="alert alert-success">
                                     <h3 class="mb-0">HABILITADO</h3>
+                                    <p>Habilitación vigente hasta:
+                                        <strong>{{ \Carbon\Carbon::parse($agremiado->fin_habilitacion)->translatedFormat('d F Y') }}</strong>
+                                    </p>
                                 </div>
-                                <p>Habilitación vigente hasta:
-                                    <strong>{{ \Carbon\Carbon::parse($agremiado->fin_habilitacion)->translatedFormat('d F Y') }}</strong>
-                                </p>
                             @else
                                 <div class="alert alert-danger">
                                     <h3 class="mb-0">INHABILITADO</h3>
