@@ -24,7 +24,7 @@
         /* Si necesito que la imagen esté centrada y rotada */
         #watermark img {
             width: 100%;
-            transform: rotate(-45deg); /* Opcional: rotación clásica de marca de agua */
+            /*transform: rotate(-45deg);*/ /* Opcional: rotación clásica de marca de agua */
         }
 
         body {
