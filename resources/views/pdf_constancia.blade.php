@@ -8,6 +8,25 @@
             margin: 0cm 0cm; /* Importante para la barra azul pegada al borde */
         }
 
+        /* Estilo para la marca de agua */
+        #watermark {
+            position: fixed;
+            top: 25%;    /* Ajusta la posición vertical */
+            left: 15%;   /* Ajusta la posición horizontal */
+            width: 70%;  /* Tamaño de la imagen */
+            /** * El z-index debe ser muy bajo para quedar detrás del texto 
+            * La opacidad ideal para marcas de agua es entre 0.1 y 0.2
+            **/
+            opacity: 0.1; 
+            z-index: -2000;
+        }
+        
+        /* Si necesito que la imagen esté centrada y rotada */
+        #watermark img {
+            width: 100%;
+            transform: rotate(-45deg); /* Opcional: rotación clásica de marca de agua */
+        }
+
         body {
             font-family: 'Helvetica', sans-serif;
             /* El margen superior debe ser estrictamente mayor que el alto del header */
@@ -90,7 +109,9 @@
     </style>
 </head>
 <body>
-
+    <div id="watermark">
+        <img src="{{ public_path('assets/img/Logo_marca_agua.png') }}" alt="Watermark">
+    </div>
     <div id="header">
         <img src="{{ public_path('assets/img/logo_colegio_full.png') }}" class="header-img">
     </div>
