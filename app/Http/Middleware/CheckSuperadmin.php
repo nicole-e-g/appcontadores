@@ -15,7 +15,7 @@ class CheckSuperadmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->guard('admin')->user()->rol !== 'superadmin') {
+        if (!auth()->guard('admin')->check() || auth()->guard('admin')->user()->rol !== 'superadmin') {
             // Si no es superadmin, lo redirigimos con un error
             return redirect()->route('admin.dashboard')
                 ->with('error', 'No tienes permisos para acceder a esta sección.');

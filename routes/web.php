@@ -36,7 +36,8 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
     // Esta es la ruta que mostrará tu 'index' después del login
     Route::get('/dashboard', [UsuarioController::class, 'index'])->name('admin.dashboard');
 
-    Route::middleware(['superadmin'])->group(function () {//USUARIOS
+    Route::middleware(['superadmin'])->group(function () {
+        //USUARIOS
         Route::get('/usuarios', [UsuarioController::class, 'listado'])->name('admin.usuarios.index');
 
         Route::post('/usuarios', [UsuarioController::class, 'store'])->name('admin.usuarios.store');
@@ -44,6 +45,13 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
         Route::put('/usuarios/{usuario}', [UsuarioController::class, 'update'])->name('admin.usuarios.update');
 
         Route::delete('/usuarios/{usuario}', [UsuarioController::class, 'destroy'])->name('admin.usuarios.destroy');
+
+        //CARNETS
+        Route::get('carnets', [CarnetController::class, 'index'])->name('admin.carnets.index');
+
+        Route::get('carnets/data', [CarnetController::class, 'getCarnetsData'])->name('admin.carnets.data');
+
+        Route::put('carnets/{carnet}/entregar', [CarnetController::class, 'entregar'])->name('admin.carnets.entregar');
     });
 
     //AGREMIADOS
@@ -68,10 +76,4 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
 
     Route::get('/pagos/{pago}/descargar', [PagoController::class, 'descargarPDF'])->name('admin.pagos.descargar');
 
-    //CARNETS
-    Route::get('carnets', [CarnetController::class, 'index'])->name('admin.carnets.index');
-
-    Route::get('carnets/data', [CarnetController::class, 'getCarnetsData'])->name('admin.carnets.data');
-
-    Route::put('carnets/{carnet}/entregar', [CarnetController::class, 'entregar'])->name('admin.carnets.entregar');
 });

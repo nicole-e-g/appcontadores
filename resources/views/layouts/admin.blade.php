@@ -89,13 +89,14 @@
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/brand.svg#cib-slideshare') }}"></use>
                 </svg> Agremiados</a>
             </li>
-
-            <li class="nav-title">Extras</li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('admin.carnets.index') }}">
-                    <svg class="nav-icon">
-                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-contact') }}"></use>
-                    </svg> Carnets</a>
-            </li>
+            @if(auth()->guard('admin')->user()->rol === 'superadmin')
+                <li class="nav-title">Extras</li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.carnets.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-contact') }}"></use>
+                        </svg> Carnets</a>
+                </li>
+            @endif
             <!-- Por si se necesita <li class="nav-divider"></li>
             <li class="nav-title">Extras</li>
             <li class="nav-group">
