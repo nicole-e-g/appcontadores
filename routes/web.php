@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\AgremiadoController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\PagoController;
+use App\Http\Controllers\Admin\CarnetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,4 +67,11 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
     Route::post('/pagos/{pago}/anular', [PagoController::class, 'anular'])->name('admin.pagos.anular');
 
     Route::get('/pagos/{pago}/descargar', [PagoController::class, 'descargarPDF'])->name('admin.pagos.descargar');
+
+    //CARNETS
+    Route::get('carnets', [CarnetController::class, 'index'])->name('admin.carnets.index');
+
+    Route::get('carnets/data', [CarnetController::class, 'getCarnetsData'])->name('admin.carnets.data');
+
+    Route::put('carnets/{carnet}/entregar', [CarnetController::class, 'entregar'])->name('admin.carnets.entregar');
 });

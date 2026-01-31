@@ -44,4 +44,8 @@ class Pago extends Model
 
         return $meses[$numero] ?? 'No definido';
     }
+
+    public function carnet() {
+        return $this->hasOne(Carnet::class, 'pago_id');
+    }
 }

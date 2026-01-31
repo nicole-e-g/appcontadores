@@ -83,6 +83,11 @@
                         Pagos de Constancias
                     </button>
                 </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="carnet-tab" data-coreui-toggle="tab" data-coreui-target="#pane-carnets" type="button" role="tab">
+                        Pagos de Carnet
+                    </button>
+                </li>
             </ul>
 
             <div class="tab-content border-start border-end border-bottom p-3" id="contenidoPestañas">
@@ -159,7 +164,7 @@
                         </table>
                     </div>
                 </div>
-
+                {{-- CONSTANCIAS --}}
                 <div class="tab-pane fade" id="pane-constancias" role="tabpanel">
                     <div class="d-flex justify-content-between mb-3">
                         <h5>Trámites de Constancias</h5>
@@ -222,6 +227,102 @@
                                     </tr>
                                     @empty
                                 @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {{-- CARNETS --}}
+                <div class="tab-pane fade" id="pane-carnets" role="tabpanel">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>Solicitudes de Carnets</h5>
+                        <button class="btn btn-primary btn-sm" data-coreui-toggle="modal" data-coreui-target="#modalNuevoCarnet">
+                            <i class="cil-file"></i> Nuevo Pago de Carnet
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tablaCarnets" class="table border mb-0">
+                            <thead class="fw-semibold text-nowrap">
+                            <tr class="align-middle">
+                                <th class="bg-body-secondary text-center">N°</th>
+                                <th class="bg-body-secondary text-center">Fecha de Pago</th>
+                                <th class="bg-body-secondary text-center">Comprobante</th>
+                                <th class="bg-body-secondary text-center">Monto</th>
+                                <th class="bg-body-secondary text-center">Tipo Solicitud</th>
+                                <th class="bg-body-secondary text-center">Entrega de Carnet</th>
+                                <th class="bg-body-secondary text-center">Estado</th>
+                                <th class="bg-body-secondary text-center">Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse ($pagos->where('tipo_pago', 'Carnet') as $pago)
+                                <tr class="align-middle">
+                                    <td class="text-center">
+                                        {{ $loop->iteration }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="text-nowrap">{{ \Carbon\Carbon::parse($pago->fecha_pago)->translatedFormat('d \d\e F, Y') }}</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="text-nowrap">{{ $pago->comprobante }}</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="text-nowrap">S/ {{ number_format($pago->monto, 2) }}</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="text-nowrap">
+                                            @if($pago->carnet)
+                                                {{-- Mostramos el valor guardado en la tabla carnets --}}
+                                                <strong>{{ $pago->carnet->tipo_tramite }}</strong>
+                                            @else
+                                                <span class="text-muted small">No especificado</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($pago->carnet)
+                                            <span class="badge {{ $pago->carnet->estado_entrega == 'Pendiente' ? 'bg-warning' : 'bg-info' }}">
+                                                {{ $pago->carnet->estado_entrega }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary">Sin solicitud</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if($pago->estado == 'Anulado')
+                                            <span class="badge bg-danger">Anulado</span>
+                                        @else
+                                            <span class="badge bg-success">Pagado</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-end">
+                                                {{-- CASO 1: El carnet ya fue entregado --}}
+                                                @if($pago->carnet && $pago->carnet->estado_entrega == 'Entregado')
+                                                    <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#modalVerDetalleEntrega-{{ $pago->id }}">
+                                                        <i class="cil-search"></i> Ver detalle de entrega
+                                                    </a>
+
+                                                    {{-- CASO 2: El pago está realizado pero el carnet sigue pendiente --}}
+                                                @elseif($pago->estado == 'Pagado')
+                                                    <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#editModalCarnet-{{ $pago->id }}">Editar</a>
+                                                    <a class="dropdown-item text-danger" data-coreui-toggle="modal" data-coreui-target="#anularModal-{{ $pago->id }}">Anular solicitud</a>
+
+                                                    {{-- CASO 3: El pago fue anulado --}}
+                                                @else
+                                                    <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#modalVerMotivo-{{ $pago->id }}">
+                                                        <i class="cil-search"></i> Ver motivo de anulación
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                            @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -469,6 +570,89 @@
             </div>
         </div>
     </div>
+
+    <!--Modal de actualización de pagos de carnet-->
+        <div class="modal fade" id="editModalCarnet-{{ $pago->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title"><i class="cil-pencil"></i> Editar Solicitud de Carnet</h5>
+                        <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="{{ route('admin.pagos.update', $pago) }}" method="POST">
+                        @csrf @method('PUT')
+                        <div class="modal-body">
+                            <input type="hidden" name="tipo_pago" value="Carnet">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tipo de Trámite:</label>
+                                <select name="tipo_tramite" class="form-select" required>
+                                    <option value="Colegiatura" {{ $pago->carnet && $pago->carnet->tipo_tramite == 'Colegiatura' ? 'selected' : '' }}>Por Colegiatura</option>
+                                    <option value="Duplicado" {{ $pago->carnet && $pago->carnet->tipo_tramite == 'Duplicado' ? 'selected' : '' }}>Duplicado</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Número de Comprobante:</label>
+                                <input type="text" name="comprobante" class="form-control" value="{{ $pago->comprobante }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Monto (S/):</label>
+                                <input type="number" name="monto" class="form-control" step="0.01" value="{{ $pago->monto }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Fecha de Pago:</label>
+                                <input type="date" name="fecha_pago" class="form-control" value="{{ $pago->fecha_pago }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal Ver Detalle de Entrega --}}
+        <div class="modal fade" id="modalVerDetalleEntrega-{{ $pago->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    {{-- 1. Verificamos que el objeto carnet no sea null --}}
+                    @if($pago->carnet)
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title"><i class="cil-info"></i> Detalle de Entrega de Carnet</h5>
+                            <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="fw-bold">Fecha de Entrega:</label>
+                                <p class="text-muted">
+                                    {{-- 2. Usamos el helper optional o una verificación de la fecha --}}
+                                    {{ $pago->carnet->fecha_entrega ? \Carbon\Carbon::parse($pago->carnet->fecha_entrega)->translatedFormat('d \d\e F, Y ') : 'Sin fecha registrada' }}
+                                </p>
+                            </div>
+                            <div class="mb-3">
+                                <label class="fw-bold">Entregado por:</label>
+                                <p class="text-muted">
+                                    <i class="cil-user"></i> {{ $pago->carnet->entregado_por ?? 'Usuario del sistema' }}
+                                </p>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Contenido alternativo si el carnet es null --}}
+                        <div class="modal-body text-center p-4">
+                            <p class="text-muted">No hay información de carnet disponible para este pago.</p>
+                        </div>
+                    @endif
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endforeach
 
     <!--Modal de pago de constancia-->
@@ -512,6 +696,63 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para solicitar carnet-->
+    <div class="modal fade" id="modalNuevoCarnet" tabindex="-1" aria-labelledby="carnetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="carnetModalLabel">
+                        <i class="cil-contact"></i> Nueva Solicitud de Carnet
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('admin.pagos.store') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" name="agremiado_id" value="{{ $agremiado->id }}">
+                        <input type="hidden" name="tipo_pago" value="Carnet">
+
+                        <div class="alert alert-info py-2">
+                            <small><i class="cil-info"></i> Al guardar este pago, se generará una solicitud de carnet con estado <strong>Pendiente</strong>.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Trámite:</label>
+                            <select name="tipo_tramite" class="form-select" required>
+                                <option value="" disabled selected>Seleccione el tipo...</option>
+                                <option value="Colegiatura">Por Colegiatura</option>
+                                <option value="Duplicado">Duplicado</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha de Pago:</label>
+                            <input type="date" name="fecha_pago" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Número de Comprobante:</label>
+                            <input type="text" name="comprobante" class="form-control" placeholder="Ej: F001-000456" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monto del Derecho (S/):</label>
+                            <div class="input-group">
+                                <span class="input-group-text">S/</span>
+                                <input type="number" name="monto" class="form-control" step="0.01" placeholder="0.00" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Pago y Solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -537,6 +778,14 @@
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
                     emptyTable: "No hay pagos registrados para este agremiado",
+                    zeroRecords: "No se encontraron resultados",
+                }
+            });
+
+            $('#tablaCarnets').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json',
+                    emptyTable: "No hay pagos de carnet para este agremiado",
                     zeroRecords: "No se encontraron resultados",
                 }
             });

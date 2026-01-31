@@ -17,7 +17,7 @@ class PagoController extends Controller
         // A. Validamos que todo esté correcto según tu DB
         $request->validate([
             'agremiado_id' => 'required|exists:agremiados,id',
-            'tipo_pago'    => 'required|in:Habilitacion,Constancia',
+            'tipo_pago'    => 'required|in:Habilitacion,Constancia,Carnet',
             'año'          => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:2000,2999',
             'mes_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'mes_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
@@ -48,6 +48,15 @@ class PagoController extends Controller
         // C. Guardamos el Pago (Habilitacion o Constancia)
         $pago = \App\Models\Pago::create($request->all());
 
+        if ($pago->tipo_pago === 'Carnet') {
+            \App\Models\Carnet::create([
+                'tipo_tramite'   => $request->tipo_tramite,
+                'agremiado_id'   => $pago->agremiado_id,
+                'pago_id'        => $pago->id,
+                'estado_entrega' => 'Pendiente' // Se crea como pendiente por defecto
+            ]);
+        }
+
         // D. ACTUALIZACIÓN DE HABILIDAD (Solo si es Habilitacion)
         // Las constancias no afectan la fecha de vencimiento
         if ($pago->tipo_pago === 'Habilitacion') {
@@ -68,12 +77,22 @@ class PagoController extends Controller
             'comprobante'  => 'required|string',
             'monto'        => 'required|numeric|min:1',
             'fecha_pago'   => 'required_if:tipo_pago,Constancia|nullable|date',
+            'tipo_tramite' => 'required_if:tipo_pago,Carnet|nullable|in:Colegiatura,Duplicado',
         ]);
 
         // 2. Actualizar el pago directamente
         $pago->update($data);
 
         // 3. Recalculamos usando la función privada
+        if ($pago->tipo_pago === 'Carnet') {
+            $pago->carnet()->updateOrCreate(
+                ['pago_id' => $pago->id],
+                [
+                    'agremiado_id' => $pago->agremiado_id,
+                    'tipo_tramite' => $request->tipo_tramite, // Guardamos la elección
+                ]
+            );
+        }
         if ($pago->tipo_pago === 'Habilitacion') {
             $this->sincronizarHabilidad($pago->agremiado_id);
         }
