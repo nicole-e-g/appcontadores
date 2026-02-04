@@ -13,7 +13,8 @@ class Pago extends Model
     // Campos que el controlador puede llenar automáticamente
     protected $fillable = [
         'agremiado_id',
-        'año',
+        'año_inicio',
+        'año_final',
         'mes_inicio',
         'mes_final',
         'comprobante',

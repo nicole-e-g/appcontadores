@@ -18,7 +18,8 @@ class PagoController extends Controller
         $request->validate([
             'agremiado_id' => 'required|exists:agremiados,id',
             'tipo_pago'    => 'required|in:Habilitacion,Constancia,Carnet',
-            'año'          => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:2000,2999',
+            'año_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:2000,2999',
+            'año_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|gte:año_inicio',
             'mes_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'mes_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'comprobante'  => 'required|string',
@@ -28,21 +29,28 @@ class PagoController extends Controller
 
         // B. VALIDACIÓN DE SOLAPAMIENTO (Solo para Habilitación)
         if ($request->tipo_pago === 'Habilitacion') {
+            $solicitadoInicio = ($request->año_inicio * 100) + $request->mes_inicio;
+            $solicitadoFinal = ($request->año_final * 100) + $request->mes_final;
+
             $existeSolapamiento = Pago::where('agremiado_id', $request->agremiado_id)
                 ->where('tipo_pago', 'Habilitacion')
-                ->where('año', $request->año)
                 ->where('estado', 'Pagado') // Ignoramos los anulados
                 ->where(function($query) use ($request) {
                     // Verificamos si el rango solicitado choca con registros existentes
                     $query->whereBetween('mes_inicio', [$request->mes_inicio, $request->mes_final])
                         ->orWhereBetween('mes_final', [$request->mes_inicio, $request->mes_final]);
                 })
+                ->where(function($query) use ($solicitadoInicio, $solicitadoFinal) {
+                    // Lógica de rangos: (Inicio1 <= Fin2) AND (Fin1 >= Inicio2)
+                    $query->whereRaw('(año_inicio * 100 + mes_inicio) <= ?', [$solicitadoFinal])
+                        ->whereRaw('(año_final * 100 + mes_final) >= ?', [$solicitadoInicio]);
+                })
                 ->exists();
 
             if ($existeSolapamiento) {
                 return redirect()->back()
                     ->withInput() // Mantiene los datos en el modal
-                    ->with('error', 'Error: Uno o más meses seleccionados ya cuentan con un pago registrado para el año ' . $request->año . '.');
+                    ->with('error', 'Error: El rango seleccionado se cruza con un pago ya existente.');
             }
         }
         // C. Guardamos el Pago (Habilitacion o Constancia)
@@ -72,6 +80,8 @@ class PagoController extends Controller
         // 1. Validar los datos que llegan del formulario
         $data = $request->validate([
             'tipo_pago'    => 'required|string',
+            'año_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer',
+            'año_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|gte:año_inicio',
             'mes_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'mes_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'comprobante'  => 'required|string',
@@ -128,14 +138,14 @@ class PagoController extends Controller
         $ultimoPago = Pago::where('agremiado_id', $agremiadoId)
                         ->where('tipo_pago', 'Habilitacion')
                         ->where('estado', 'Pagado')
-                        ->orderBy('año', 'desc')
+                        ->orderBy('año_final', 'desc')
                         ->orderBy('mes_final', 'desc')
                         ->first();
 
         $agremiado = Agremiado::find($agremiadoId);
 
         if ($ultimoPago) {
-            $nuevaFecha = \Carbon\Carbon::create($ultimoPago->año, $ultimoPago->mes_final, 1)
+            $nuevaFecha = \Carbon\Carbon::create($ultimoPago->año_final, $ultimoPago->mes_final, 1)
                                 ->endOfMonth();
 
             $agremiado->update([

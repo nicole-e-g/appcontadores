@@ -103,7 +103,7 @@
                             <thead class="fw-semibold text-nowrap">
                                 <tr class="align-middle">
                                     <th class="bg-body-secondary">N°</th>
-                                    <th class="bg-body-secondary">Año</th>
+                                    <th class="bg-body-secondary">Periodo(Año)</th>
                                     <th class="bg-body-secondary">Mes Inicio</th>
                                     <th class="bg-body-secondary">Mes Final</th>
                                     <th class="bg-body-secondary">Comprobante</th>
@@ -119,7 +119,10 @@
                                             {{ $loop->iteration }}
                                         </td>
                                         <td>
-                                            <div class="text-nowrap">{{ $pago->año }}</div>
+                                            {{ $pago->año_inicio }}
+                                            @if($pago->año_inicio != $pago->año_final)
+                                                - {{ $pago->año_final }}
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="text-nowrap">{{ $pago->getMesNombre($pago->mes_inicio) }}</div>
@@ -344,11 +347,19 @@
                     <div class="modal-body">
                         <input type="hidden" name="agremiado_id" value="{{ $agremiado->id }}">
 
-                        <div class="mb-3">
-                            <label for="año_crear" class="form-label">Año:</label>
-                            <input type="number" id="input_año_pago" class="form-control" maxlength="4" name="año" value="{{ date('Y') }}" step="1" placeholder="YYYY" min="2000" max="2999"
-                                   data-siguiente-mes="{{ $siguienteMes }}"
-                                   data-siguiente-año="{{ $siguienteAño }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="año_inicio" class="form-label fw-bold">Año Inicio:</label>
+                                <input type="number" id="input_año_pago" class="form-control" name="año_inicio"
+                                       value="{{ date('Y') }}" min="2000" max="2999" required
+                                       data-siguiente-mes="{{ $siguienteMes }}"
+                                       data-siguiente-año="{{ $siguienteAño }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="año_final" class="form-label fw-bold">Año Final:</label>
+                                <input type="number" id="input_año_final" class="form-control" name="año_final"
+                                       value="{{ date('Y') }}" min="2000" max="2999" required>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -414,11 +425,17 @@
                         @csrf
                         @method('PUT')
                         <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="año_crear" class="form-label">Año:</label>
-                                <input type="number" id="input_año_pago" class="form-control" maxlength="4" name="año" value="{{ $pago->año }}" step="1" placeholder="YYYY" min="2000" max="2999"
-                                       data-siguiente-mes="{{ $siguienteMes }}"
-                                       data-siguiente-año="{{ $siguienteAño }}">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Año Inicio:</label>
+                                    <input type="number" name="año_inicio" class="form-control"
+                                           value="{{ $pago->año_inicio }}" min="2000" max="2999" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Año Final:</label>
+                                    <input type="number" name="año_final" class="form-control"
+                                           value="{{ $pago->año_final }}" min="2000" max="2999" required>
+                                </div>
                             </div>
 
                             <div class="row">
@@ -817,6 +834,11 @@
 
         document.getElementById('input_año_pago').addEventListener('input', function() {
             const añoIngresado = parseInt(this.value);
+            const añoFinalInput = document.getElementById('input_año_final');
+            // Si el año final es menor al nuevo año de inicio, lo igualamos
+            if(parseInt(añoFinalInput.value) < añoIngresado) {
+                añoFinalInput.value = añoIngresado;
+            }
             const sigMes = parseInt(this.dataset.siguienteMes);
             const sigAño = parseInt(this.dataset.siguienteAño);
             const selectMes = document.getElementById('select_mes_inicio');

@@ -126,7 +126,7 @@ class AgremiadoController extends Controller
         $ultimo = Pago::where('agremiado_id', $agremiado->id)
             ->where('tipo_pago', 'Habilitacion')
             ->where('estado', 'Pagado')
-            ->orderBy('año', 'desc')
+            ->orderBy('año_final', 'desc')
             ->orderBy('mes_final', 'desc')
             ->first();
 
