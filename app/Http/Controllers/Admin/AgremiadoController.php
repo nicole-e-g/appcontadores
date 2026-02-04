@@ -132,7 +132,7 @@ class AgremiadoController extends Controller
 
         // Lógica de cálculo del siguiente periodo de pago
         $siguienteMes = $ultimo ? ($ultimo->mes_final + 1) : 1;
-        $siguienteAño = $ultimo ? $ultimo->año : date('Y');
+        $siguienteAño = $ultimo ? $ultimo->año_final : date('Y');
 
         if ($siguienteMes > 12) {
             $siguienteMes = 1;

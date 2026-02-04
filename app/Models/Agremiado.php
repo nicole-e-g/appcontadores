@@ -25,6 +25,22 @@ class Agremiado extends Model
         'fin_habilitacion'
     ];
 
+    protected $appends = ['estado'];
+
+    public function getestadoAttribute()
+    {
+        // Si no tiene fecha de fin, mantenemos lo que diga la DB
+        if (!$this->fin_habilitacion) {
+            return 'Inhabilitado';
+        }
+
+        // Comparamos HOY contra la fecha de fin (sin importar las horas)
+        $hoy = \Carbon\Carbon::now()->startOfDay();
+        $vencimiento = \Carbon\Carbon::parse($this->fin_habilitacion)->startOfDay();
+
+        return ($hoy->lte($vencimiento)) ? 'Habilitado' : 'Inhabilitado';
+    }
+
     // Si quieres tratar deleted_at como una fecha de Carbon automáticamente:
     protected $casts = [
         'fin_habilitacion' => 'date',
@@ -48,4 +64,5 @@ class Agremiado extends Model
         }
         return ($value === 'M') ? 'Masculino' : '';
     }
+
 }
