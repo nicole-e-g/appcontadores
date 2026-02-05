@@ -32,7 +32,17 @@
                             <p class="text-muted">Matrícula: {{ $agremiado->matricula }}</p>
                             <hr>
 
-                            @if($agremiado->estado == 'Habilitado')
+                            {{-- 1. CASO VITALICIO: Prioridad absoluta --}}
+                            @if($agremiado->es_vitalicio)
+                                <div class="alert alert-info py-4">
+                                    <h3 class="fw-bold mb-0">VITALICIO</h3>
+                                    <p class="mb-0">
+                                        <i class="bi bi-star-fill"></i> Habilitación Profesional Permanente
+                                    </p>
+                                </div>
+                                <p class="text-success fw-bold">Este miembro se encuentra apto para el ejercicio profesional.</p>
+                            {{-- 2. CASO HABILITADO: Por pagos vigentes --}}
+                            @elseif($agremiado->estado == 'Habilitado')
                                 <div class="alert alert-success">
                                     <h3 class="mb-0">HABILITADO</h3>
                                     <p>Habilitación vigente hasta:
@@ -40,6 +50,7 @@
                                     </p>
                                 </div>
                             @else
+                                {{-- 3. CASO INHABILITADO --}}
                                 <div class="alert alert-danger">
                                     <h3 class="mb-0">INHABILITADO</h3>
                                     @if($agremiado->fin_habilitacion)
