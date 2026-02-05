@@ -17,19 +17,29 @@ class AgremiadoController extends Controller
     public function index(Request $request)
     {
         // Actualización masiva de estados basada en la fecha de fin de habilitación
-        Agremiado::where('estado', 'Habilitado')
+        Agremiado::where('es_vitalicio', false)
+            ->where('estado', 'Habilitado')
             ->where('fin_habilitacion', '<=', Carbon::now())
             ->update(['estado' => 'Inhabilitado']);
 
         // 1. Procesamiento para DataTable Server-side
         if ($request->ajax()) {
-            $query = Agremiado::select(['id', 'matricula', 'dni', 'ruc', 'nombres', 'apellidos', 'estado', 'fin_habilitacion']);
+            $query = Agremiado::select(['id', 'matricula', 'dni', 'ruc', 'nombres', 'apellidos', 'estado', 'fin_habilitacion', 'es_vitalicio']);
 
             return DataTables::of($query)
                 // Renderizado de etiquetas de estado con colores
                 ->editColumn('estado', function($row) {
-                    $clase = ($row->estado == 'Habilitado') ? 'bg-success' : 'bg-danger';
-                    return '<span class="badge ' . $clase . '">' . strtoupper($row->estado) . '</span>';
+                    // Si es vitalicio, badge azul o dorado
+                    if ($row->es_vitalicio) {
+                        return '<span class="badge bg-info text-dark">VITALICIO</span>';
+                    }
+
+                    // Si no, lógica normal de colores
+                    if ($row->estado == 'Habilitado') {
+                        return '<span class="badge bg-success">HABILITADO</span>';
+                    }
+
+                    return '<span class="badge bg-danger">INHABILITADO</span>';
                 })
                 // Formateo de fecha de habilitación
                 ->editColumn('fin_habilitacion', function($row) {
@@ -107,10 +117,24 @@ class AgremiadoController extends Controller
             'nombres'          => 'required|string|max:255',
             'apellidos'        => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
+            'es_vitalicio'     => 'nullable|boolean',
         ]);
 
         $data['celular'] = array_values(array_filter([$request->celular1, $request->celular2]));
         $data['correo']  = array_values(array_filter([$request->correo1, $request->correo2]));
+
+        $data['es_vitalicio'] = $request->has('es_vitalicio');
+
+        if ($data['es_vitalicio']) {
+            $data['estado'] = 'Vitalicio';
+            $data['fin_habilitacion'] = null; // Al ser vitalicio, eliminamos la fecha de fin de habilitación
+        } else {
+            // Si dejas de ser vitalicio, se recalcula su estado aquí
+            // o dejar que el sistema lo ponga como Inhabilitado por defecto
+            if ($agremiado->es_vitalicio) {
+                $data['estado'] = 'Inhabilitado';
+            }
+        }
 
         $agremiado->update($data);
 

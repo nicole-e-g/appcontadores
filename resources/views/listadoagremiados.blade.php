@@ -192,10 +192,10 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="edit_sexo" class="form-label">Sexo:</label>
-                                <select name="sexo" id="edit_sexo" class="form-select">
+                                <select name="sexo" id="edit_sexo" class="form-select" required>
                                     <option value="">Seleccione...</option>
-                                    <option value="F">Mujer</option>
-                                    <option value="M">Varón</option>
+                                    <option value="F">Femenino</option>
+                                    <option value="M">Masculino</option>
                                 </select>
                             </div>
                         </div>
@@ -240,6 +240,14 @@
                                 <option value="Huánuco">Huánuco</option>
                                 <option value="Tingo María">Tingo María</option>
                             </select>
+                        </div>
+
+                        <div class="mb-3 form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="es_vitalicio" id="edit_es_vitalicio" value="1"> {{-- ID cambiado para JS --}}
+                            <label class="form-check-label fw-bold text-primary" for="edit_es_vitalicio">
+                                <i class="cil-star"></i> Agremiado Vitalicio
+                            </label>
+                            <div class="form-text">Al activar esta opción, el agremiado no requerirá pagos para estar habilitado.</div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -331,7 +339,15 @@
                 $('#edit_ruc').val(data.ruc);
                 $('#edit_matricula').val(data.matricula);
                 $('#edit_fecha_matricula').val(data.fecha_matricula);
-                $('#edit_sexo').val(data.sexo);
+                if (data.sexo) {
+                    // Mapeamos los nombres largos a las iniciales
+                    let valorSexo = '';
+                    if (data.sexo === 'Femenino') valorSexo = 'F';
+                    else if (data.sexo === 'Masculino') valorSexo = 'M';
+                    else valorSexo = data.sexo; // Por si ya viene como F o M
+
+                    $('#edit_sexo').val(valorSexo);
+                }
                 $('#edit_sede').val(data.sede);
                 $('#span_nombre').text(data.nombres);
 
@@ -343,6 +359,13 @@
                 // Manejo de Correos (Arreglos)
                 $('#edit_correo1').val(data.correo && data.correo[0] ? data.correo[0] : '');
                 $('#edit_correo2').val(data.correo && data.correo[1] ? data.correo[1] : '');
+
+                // NUEVA LÓGICA PARA VITALICIO
+                if (data.es_vitalicio == 1 || data.es_vitalicio == true) {
+                    $('#edit_es_vitalicio').prop('checked', true);
+                } else {
+                    $('#edit_es_vitalicio').prop('checked', false);
+                }
 
                 // Actualizamos la ruta del formulario
                 $('#formEditarAgremiado').attr('action', '/admin/agremiados/' + id);

@@ -22,13 +22,18 @@ class Agremiado extends Model
         'celular',
         'estado',
         'correo',
-        'fin_habilitacion'
+        'fin_habilitacion',
+        'es_vitalicio'
     ];
 
     protected $appends = ['estado'];
 
     public function getestadoAttribute()
     {
+        // REGLA: Si el check de vitalicio está activo, ignoramos todo lo demás
+        if ($this->es_vitalicio) {
+            return 'Vitalicio';
+        }
         // Si no tiene fecha de fin, mantenemos lo que diga la DB
         if (!$this->fin_habilitacion) {
             return 'Inhabilitado';
