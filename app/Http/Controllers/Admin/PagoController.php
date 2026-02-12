@@ -163,9 +163,16 @@ class PagoController extends Controller
     public function descargarPDF(Pago $pago)
     {
         $agremiado = $pago->agremiado;
-        $fechaVencimiento = $agremiado->fin_habilitacion
-            ? \Carbon\Carbon::parse($agremiado->fin_habilitacion)
-            : null;
+        // 1. Lógica de Vigencia Dinámica
+        if ($agremiado->es_vitalicio) {
+            // Si es vitalicio, la vigencia es el 31 de diciembre del año actual
+            $fechaVencimiento = \Carbon\Carbon::now()->month(12)->day(31);
+        } else {
+            // Si no es vitalicio, usamos su fecha de fin de habilitación normal
+            $fechaVencimiento = $agremiado->fin_habilitacion
+                ? \Carbon\Carbon::parse($agremiado->fin_habilitacion)
+                : null;
+        }
 
         $data = [
             'nombres' => $agremiado->nombres . ' ' . $agremiado->apellidos,

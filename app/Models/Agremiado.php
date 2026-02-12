@@ -32,7 +32,7 @@ class Agremiado extends Model
     {
         // REGLA: Si el check de vitalicio está activo, ignoramos todo lo demás
         if ($this->es_vitalicio) {
-            return 'Vitalicio';
+            return 'Habilitado';
         }
         // Si no tiene fecha de fin, mantenemos lo que diga la DB
         if (!$this->fin_habilitacion) {
