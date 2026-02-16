@@ -18,7 +18,7 @@
             {{-- Columna Izquierda: Formulario de Edición --}}
             <div class="col-lg-7">
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white py-3">
+                    <div class="card-header py-3">
                         <h5 class="mb-0 fw-bold text-primary">Editar Capacitación: {{ $curso->nombre_curso }}</h5>
                     </div>
                     <form action="{{ route('admin.cursos.update', $curso->id) }}" method="POST" enctype="multipart/form-data">
@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="card-footer bg-light text-end py-3">
+                        <div class="card-footer text-end py-3">
                             <a href="{{ route('admin.cursos.index') }}" class="btn btn-secondary">Cancelar</a>
                             <button type="submit" class="btn btn-primary px-4">Actualizar Cambios</button>
                         </div>
@@ -107,7 +107,7 @@
                     <div class="card-header bg-dark text-white py-3">
                         <h5 class="mb-0">Previsualización del Certificado</h5>
                     </div>
-                    <div class="card-body bg-light text-center">
+                    <div class="card-body text-center">
                         <div id="certificado-preview-container"
                              style="position: relative; width: 100%; aspect-ratio: 1.41 / 1; border: 1px solid #ddd; background: #fff; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 

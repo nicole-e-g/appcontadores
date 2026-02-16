@@ -38,6 +38,7 @@ class CursoController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('action', function($row) {
+                    $iconPath = asset('vendors/@coreui/icons/svg/free.svg#cil-options');
                     // Rutas para las acciones
                     $editUrl = route('admin.cursos.edit', $row->id);
                     $showUrl = route('admin.cursos.edit', $row->id); // Usamos edit como placeholder
@@ -46,8 +47,10 @@ class CursoController extends Controller
 
                     // Botón disparador (los tres puntos verticales)
                     // Usamos 'cil-options' y lo rotamos 90 grados para que se vea vertical
-                    $btn .= '<button class="btn btn-link text-dark text-decoration-none p-0" type="button" data-coreui-toggle="dropdown" aria-expanded="false">';
-                    $btn .= '<i class="cil-options" style="transform: rotate(90deg);"></i>';
+                    $btn .= '<button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
+                    $btn .= '<svg class="icon" style="width:20px; height:20px;">';
+                    $btn .= '<use xlink:href="'.$iconPath.'"></use>';
+                    $btn .= '</svg>';
                     $btn .= '</button>';
 
                     // Menú con las opciones

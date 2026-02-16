@@ -18,8 +18,8 @@
             {{-- Formulario --}}
             <div class="col-lg-7">
                 <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0 fw-bold text-primary">Configuración del Nuevo Curso</h5>
+                    <div class="card-header py-3">
+                        <h5 class="mb-0 fw-bold text-primary">Creación del Nuevo Curso</h5>
                     </div>
                     {{-- Asegúrate de que esta ruta exista en tu web.php --}}
                     <form action="#" method="POST" enctype="multipart/form-data">
@@ -90,7 +90,7 @@
                             </div>
                         </div>
 
-                        <div class="card-footer bg-light text-end py-3">
+                        <div class="card-footer text-end py-3">
                             <a href="{{ route('admin.cursos.index') }}" class="btn btn-secondary">Regresar</a>
                             <button type="submit" class="btn btn-primary px-4">Guardar Capacitación</button>
                         </div>
@@ -104,16 +104,16 @@
                     <div class="card-header bg-dark text-white">
                         <h5 class="mb-0">Vista Previa del Certificado</h5>
                     </div>
-                    <div class="card-body bg-light text-center">
+                    <div class="card-body text-center">
                         <div id="certificado-preview-container"
                              style="position: relative; width: 100%; aspect-ratio: 1.41 / 1; border: 1px solid #ddd; background: #fff; overflow: hidden;">
 
                             <img id="prev-modelo" src="#" style="width: 100%; height: 100%; display: none; object-fit: contain;">
 
                             {{-- Textos con IDs verificados --}}
-                            <div id="prev-texto-curso" style="position: absolute; width: 100%; text-align: center; top: 35%; font-weight: bold; font-size: 1.2vw; padding: 0 10%; z-index: 10;">[CURSO]</div>
+                            <div id="prev-texto-curso" style="position: absolute; width: 100%; text-align: center; top: 35%; font-weight: bold; font-size: 1.2vw; padding: 0 10%; color: #555; z-index: 10;">[CURSO]</div>
                             <div id="prev-texto-ponente" style="position: absolute; width: 100%; text-align: center; top: 50%; font-size: 0.9vw; color: #555; z-index: 10;">[PONENTE]</div>
-                            <div id="prev-texto-horas" style="position: absolute; width: 100%; text-align: center; bottom: 25%; font-weight: bold; font-size: 0.8vw; z-index: 10;">[HORAS]</div>
+                            <div id="prev-texto-horas" style="position: absolute; width: 100%; color: #555; text-align: center; bottom: 25%; font-weight: bold; font-size: 0.8vw; z-index: 10;">[HORAS]</div>
 
                             <img id="prev-firma1" src="#" style="position: absolute; bottom: 12%; left: 15%; width: 15%; display: none; z-index: 11;">
                             <img id="prev-firma2" src="#" style="position: absolute; bottom: 12%; right: 15%; width: 15%; display: none; z-index: 11;">
