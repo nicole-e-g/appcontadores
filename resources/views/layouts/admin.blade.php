@@ -42,6 +42,7 @@
     <!-- Vendors styles-->
     <link rel="stylesheet" href="{{ asset('vendors/simplebar/css/simplebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/vendors/simplebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('vendors/@coreui/icons/css/free.min.css') }}">
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <!-- We use those styles to show code examples, you should remove them in your application.-->
@@ -95,6 +96,12 @@
                         <svg class="nav-icon">
                             <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-contact') }}"></use>
                         </svg> Carnets</a>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" href="{{ route('admin.cursos.index') }}">
+                        <svg class="nav-icon">
+                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-book') }}"></use>
+                        </svg> Capacitaciones <span class="badge badge-sm bg-info ms-auto">PROX</span></a>
                 </li>
             @endif
             <!-- Por si se necesita <li class="nav-divider"></li>

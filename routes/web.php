@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AgremiadoController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\CarnetController;
+use App\Http\Controllers\Admin\CursoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,15 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
         Route::get('carnets/data', [CarnetController::class, 'getCarnetsData'])->name('admin.carnets.data');
 
         Route::put('carnets/{carnet}/entregar', [CarnetController::class, 'entregar'])->name('admin.carnets.entregar');
+
+        //CURSOS
+        Route::resource('cursos', CursoController::class)->names('admin.cursos');
+
+        Route::get('cursos', [CursoController::class, 'index'])->name('admin.cursos.index');
+
+        Route::post('cursos/anular/{curso}', [CursoController::class, 'anular'])->name('admin.cursos.anular');
+
+        //Route::get('cursos/{curso}', [CursoController::class, 'show'])->name('admin.cursos.show');
     });
 
     //AGREMIADOS
