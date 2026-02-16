@@ -20,7 +20,7 @@
     {{-- ... (Alertas de éxito igual) ... --}}
 
     <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center bg-white">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <span class="fw-bold text-primary">Gestión de Capacitaciones</span>
             <a href="{{ route('admin.cursos.create') }}" class="btn btn-primary">
                 <i class="cil-plus"></i> Nueva Capacitación
@@ -38,12 +38,12 @@
                     <button class="nav-link" id="anulados-tab" data-coreui-toggle="tab" data-coreui-target="#anulados" type="button">Anulados</button>
                 </li>
             </ul>
-            <div class="tab-content border border-top-0 p-3 bg-white">
+            <div class="tab-content border border-top-0 p-3">
                 {{-- TAB 1: VIGENTES --}}
                 <div class="tab-pane fade show active" id="vigentes" role="tabpanel">
                     <div class="table-responsive">
                         <table id="tablaVigentes" class="table table-striped border w-100">
-                            <thead class="bg-light">
+                            <thead>
                             <tr>
                                 <th>N°</th>
                                 <th>Nombre del Curso</th>
@@ -62,7 +62,7 @@
                 <div class="tab-pane fade" id="terminadas" role="tabpanel">
                     <div class="table-responsive">
                         <table id="tablaTerminadas" class="table table-striped border w-100">
-                            <thead class="bg-light">
+                            <thead>
                             <tr>
                                 <th>N°</th>
                                 <th>Nombre del Curso</th>
@@ -81,7 +81,7 @@
                 <div class="tab-pane fade" id="anulados" role="tabpanel">
                     <div class="table-responsive">
                         <table id="tablaAnulados" class="table table-striped border w-100">
-                            <thead class="bg-light">
+                            <thead>
                             <tr>
                                 <th>N°</th>
                                 <th>Nombre del Curso</th>
