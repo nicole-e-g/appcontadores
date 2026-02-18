@@ -59,6 +59,8 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
 
         Route::get('cursos', [CursoController::class, 'index'])->name('admin.cursos.index');
 
+        Route::post('cursos', [CursoController::class, 'store'])->name('admin.cursos.store');
+
         Route::post('cursos/anular/{curso}', [CursoController::class, 'anular'])->name('admin.cursos.anular');
 
         //Route::get('cursos/{curso}', [CursoController::class, 'show'])->name('admin.cursos.show');

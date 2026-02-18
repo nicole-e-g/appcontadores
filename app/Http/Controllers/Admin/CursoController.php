@@ -119,7 +119,7 @@ class CursoController extends Controller
 
         Curso::create($data);
 
-        return redirect()->back()->with('success', 'La capacitación se registró correctamente en Colegiaturas.');
+        return redirect()->back()->with('success', 'La capacitación se registró correctamente.');
     }
 
     public function update(Request $request, Curso $curso)

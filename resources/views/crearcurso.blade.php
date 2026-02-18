@@ -21,8 +21,7 @@
                     <div class="card-header py-3">
                         <h5 class="mb-0 fw-bold text-primary">Creación del Nuevo Curso</h5>
                     </div>
-                    {{-- Asegúrate de que esta ruta exista en tu web.php --}}
-                    <form action="#" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.cursos.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="card-body">
                             <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">1. Información General</h6>
