@@ -41,7 +41,7 @@
     <meta name="theme-color" content="#ffffff">
     <!-- Vendors styles-->
     <link rel="stylesheet" href="{{ asset('vendors/simplebar/css/simplebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/vendors/simplebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/vendors/simplebar.scss') }}">
     <link rel="stylesheet" href="{{ asset('vendors/@coreui/icons/css/free.min.css') }}">
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -104,37 +104,6 @@
                         </svg> Capacitaciones <span class="badge badge-sm bg-info ms-auto">PROX</span></a>
                 </li>
             @endif
-            <!-- Por si se necesita <li class="nav-divider"></li>
-            <li class="nav-title">Extras</li>
-            <li class="nav-group">
-                <a class="nav-link nav-group-toggle" href="#">
-                    <svg class="nav-icon">
-                        <use xlink:href="{{ asset('vendors/@coreui/icons/svg/brand.svg#cib-semaphoreci')}}"></use>
-                    </svg> Configurable
-                </a>
-                <ul class="nav-group-items compact">
-                    <li class="nav-item"><a class="nav-link" href="login.html" target="_top">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-account-logout')}}"></use>
-                        </svg> Login</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="register.html" target="_top">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-account-logout')}}"></use>
-                        </svg> Register</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="404.html" target="_top">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-bug')}}"></use>
-                        </svg> Error 404</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="500.html" target="_top">
-                        <svg class="nav-icon">
-                            <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-bug')}}"></use>
-                            </svg> Error 500</a>
-                        </li>
-                </ul>
-            </li> -->
         </ul>
         <div class="sidebar-footer border-top d-none d-md-flex">
             <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
@@ -229,6 +198,18 @@
     <script src="{{ asset('vendors/i18next-http-backend/js/i18nextHttpBackend.js')}}"></script>
     <script src="{{ asset('vendors/i18next-browser-languagedetector/js/i18nextBrowserLanguageDetector.js')}}"></script>
     <script src="{{ asset('js/i18next.js')}}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Plugins and scripts required by this view-->
+    <script src="{{ asset('vendors/chart.js/js/chart.umd.js')}}"></script>
+    <script src="{{ asset('vendors/@coreui/chartjs/js/coreui-chartjs.js')}}"></script>
+    <script src="{{ asset('vendors/@coreui/utils/js/index.js')}}"></script>
+    <script src="{{ asset('vendors/datatables.net/js/dataTables.min.js')}}"></script>
+    <script src="{{ asset('js/main.js')}}"></script>
+    <script>
+    </script>
+
     <script>
       const header = document.querySelector('header.header');
 
@@ -237,14 +218,6 @@
           header.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
         }
       });
-    </script>
-    <!-- Plugins and scripts required by this view-->
-    <script src="{{ asset('vendors/chart.js/js/chart.umd.js')}}"></script>
-    <script src="{{ asset('vendors/@coreui/chartjs/js/coreui-chartjs.js')}}"></script>
-    <script src="{{ asset('vendors/@coreui/utils/js/index.js')}}"></script>
-    <script src="{{ asset('js/main.js')}}"></script>
-    <script src="{{ asset('vendors/datatables.net/js/dataTables.min.js')}}"></script>
-    <script>
     </script>
     @stack('scripts')
 </body>
