@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+    @php $facturacionActiva = \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor'); @endphp
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0" role="alert" id="success-alert">
             {{ session('success') }}
@@ -106,10 +107,11 @@
                                     <th class="bg-body-secondary">Periodo(Año)</th>
                                     <th class="bg-body-secondary">Mes Inicio</th>
                                     <th class="bg-body-secondary">Mes Final</th>
-                                    <th class="bg-body-secondary">Comprobante</th>
+                                    <th class="bg-body-secondary">N°Comprobante</th>
                                     <th class="bg-body-secondary">Monto</th>
                                     <th class="bg-body-secondary">Estado</th>
-                                    <th class="bg-body-secondary">Accion</th>
+                                    <th class="bg-body-secondary col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">Comprobante</th>
+                                    <th class="bg-body-secondary col-manual {{ $facturacionActiva ? 'd-none' : '' }}">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,7 +145,12 @@
                                                 <span class="badge bg-success">Pagado</span>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="text-center col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">
+                                            @if($pago->comprobante_url)
+                                                <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-sm btn-outline-danger"><svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file')}}"></use></svg> PDF</a>
+                                            @endif
+                                        </td>
+                                        <td class=" col-manual {{ $facturacionActiva ? 'd-none' : '' }}">
                                             <div class="dropdown">
                                                 <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
@@ -184,7 +191,8 @@
                                     <th class="bg-body-secondary text-center">Comprobante</th>
                                     <th class="bg-body-secondary text-center">Monto</th>
                                     <th class="bg-body-secondary text-center">Estado</th>
-                                    <th class="bg-body-secondary text-center">Accion</th>
+                                    <th class="bg-body-secondary col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">Comprobante</th>
+                                    <th class="bg-body-secondary col-manual {{ $facturacionActiva ? 'd-none' : '' }}">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -209,7 +217,12 @@
                                                 <span class="badge bg-success">Pagado</span>
                                             @endif
                                         </td>
-                                        <td>
+                                        <td class="text-center col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">
+                                            @if($pago->comprobante_url)
+                                                <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-sm btn-outline-danger"><svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file')}}"></use></svg> PDF</a>
+                                            @endif
+                                        </td>
+                                        <td class=" col-manual {{ $facturacionActiva ? 'd-none' : '' }}">
                                             <div class="dropdown">
                                                 <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
@@ -253,7 +266,8 @@
                                 <th class="bg-body-secondary text-center">Tipo Solicitud</th>
                                 <th class="bg-body-secondary text-center">Entrega de Carnet</th>
                                 <th class="bg-body-secondary text-center">Estado</th>
-                                <th class="bg-body-secondary text-center">Acción</th>
+                                <th class="bg-body-secondary col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">Comprobante</th>
+                                <th class="bg-body-secondary col-manual {{ $facturacionActiva ? 'd-none' : '' }}">Acción</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -297,7 +311,12 @@
                                             <span class="badge bg-success">Pagado</span>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="text-center col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">
+                                        @if($pago->comprobante_url)
+                                            <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-sm btn-outline-danger"><svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file')}}"></use></svg> PDF</a>
+                                        @endif
+                                    </td>
+                                    <td class=" col-manual {{ $facturacionActiva ? 'd-none' : '' }}">
                                         <div class="dropdown">
                                             <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
@@ -348,6 +367,14 @@
                         <input type="hidden" name="agremiado_id" value="{{ $agremiado->id }}">
 
                         <div class="row">
+                            <div class="mb-3 seccion-sibi {{ \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor') ? '' : 'd-none' }}">
+                                <label class="form-label fw-bold text-primary">Comprobante Electrónico (SIBI):</label>
+                                <select name="tipo_comprobante_sibi" class="form-select border-primary">
+                                    <option value="03" selected>Boleta de Venta</option>
+                                    <option value="01">Factura</option>
+                                </select>
+                            </div>
+
                             <div class="col-md-6 mb-3">
                                 <label for="año_inicio" class="form-label fw-bold">Año Inicio:</label>
                                 <input type="number" id="input_año_pago" class="form-control" name="año_inicio"
@@ -388,8 +415,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Comprobante:</label>
-                                <input type="text" class="form-control" name="comprobante" placeholder="Ej: F001-123" required>
+                                <label class="form-label fw-bold">Comprobante:</label>
+                                <input type="text" class="form-control input-sibi-control" name="comprobante" placeholder="{{ $facturacionActiva ? 'Generación Automática' : 'Ej: 001-123' }}" {{ $facturacionActiva ? 'readonly' : '' }}required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Monto a Pagar (S/):</label>
@@ -680,6 +707,7 @@
                     <h5 class="modal-title" id="constanciaModalLabel">Registrar Pago de Constancia / Trámite</h5>
                     <button type="button" class="btn-close btn-close-white" data-coreui-dismiss="modal" aria-label="Close"></button>
                 </div>
+
                 <form action="{{ route('admin.pagos.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
@@ -690,14 +718,22 @@
                             <small>Este registro no afecta la fecha de habilitación profesional.</small>
                         </div>
 
+                        <div class="mb-3 seccion-sibi {{ \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor') ? '' : 'd-none' }}">
+                            <label class="form-label fw-bold text-primary">Comprobante Electrónico (SIBI):</label>
+                            <select name="tipo_comprobante_sibi" class="form-select border-primary">
+                                <option value="03" selected>Boleta de Venta</option>
+                                <option value="01">Factura</option>
+                            </select>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-bold">Fecha de Pago:</label>
                             <input type="date" name="fecha_pago" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Número de Comprobante:</label>
-                            <input type="text" name="comprobante" class="form-control" placeholder="Ej: F001-000123" required>
+                            <label class="form-label fw-bold">Comprobante:</label>
+                            <input type="text" class="form-control input-sibi-control" name="comprobante" placeholder="{{ $facturacionActiva ? 'Generación Automática' : 'Ej: 001-123' }}" {{ $facturacionActiva ? 'readonly' : '' }}required>
                         </div>
 
                         <div class="mb-3">
@@ -734,6 +770,14 @@
                             <small><i class="cil-info"></i> Al guardar este pago, se generará una solicitud de carnet con estado <strong>Pendiente</strong>.</small>
                         </div>
 
+                        <div class="mb-3 seccion-sibi {{ \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor') ? '' : 'd-none' }}">
+                            <label class="form-label fw-bold text-primary">Comprobante Electrónico (SIBI):</label>
+                            <select name="tipo_comprobante_sibi" class="form-select border-primary">
+                                <option value="03" selected>Boleta de Venta</option>
+                                <option value="01">Factura</option>
+                            </select>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tipo de Trámite:</label>
                             <select name="tipo_tramite" class="form-select" required>
@@ -749,8 +793,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Número de Comprobante:</label>
-                            <input type="text" name="comprobante" class="form-control" placeholder="Ej: F001-000456" required>
+                            <label class="form-label fw-bold">Comprobante:</label>
+                            <input type="text" class="form-control input-sibi-control" name="comprobante" placeholder="{{ $facturacionActiva ? 'Generación Automática' : 'Ej: 001-123' }}" {{ $facturacionActiva ? 'readonly' : '' }}required>
                         </div>
 
                         <div class="mb-3">

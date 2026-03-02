@@ -15,6 +15,30 @@
         [data-coreui-theme="dark"] .logo-dark {
             display: block !important;
         }
+        /* 2. Ajustes Responsivos para el Sidebar de Colegiaturas */
+        .sidebar-text-hide {
+            transition: opacity 0.3s ease;
+            display: inline-block;
+        }
+
+        /* Oculta el texto y centra el switch cuando el menú se encoge */
+        .sidebar-narrow .sidebar-text-hide,
+        .sidebar-minimized .sidebar-text-hide {
+            display: none !important;
+        }
+
+        .sidebar-narrow .form-check-input,
+        .sidebar-minimized .form-check-input {
+            margin: 0 auto !important;
+            float: none !important;
+        }
+
+        .sidebar-narrow .nav-item-switch,
+        .sidebar-minimized .nav-item-switch {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
     <base href="./">
     <meta charset="utf-8">
@@ -49,6 +73,7 @@
     <link href="{{ asset('css/examples.css') }}" rel="stylesheet">
     <script src="{{ asset('js/config.js') }}"></script>
     <script src="{{ asset('js/color-modes.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="{{ asset('vendors/@coreui/chartjs/css/coreui-chartjs.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
@@ -72,6 +97,20 @@
             <button class="btn-close d-lg-none" type="button" data-coreui-theme="dark" aria-label="Close" onclick="coreui.Sidebar.getInstance(document.querySelector(&quot;#sidebar&quot;)).toggle()"></button>
         </div>
         <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
+            @if(auth()->guard('admin')->user()->rol === 'superadmin')
+            <li class="nav-item px-3 mt-2 mb-2">
+                <div class="form-check form-switch mb-0 d-flex align-items-center">
+                    <input class="form-check-input me-2" type="checkbox" id="switchFacturacion"
+                           style="cursor: pointer; width: 2.5em; height: 1.25em;"
+                        {{ \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor') ? 'checked' : '' }}>
+
+                    <span class="nav-link-text text-white fw-bold sidebar-text-hide" style="font-size: 0.85rem; white-space: nowrap;">
+                        Facturación
+                    </span>
+                </div>
+            </li>
+            @endif
+
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.dashboard') }}">
                 <svg class="nav-icon">
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-speedometer') }}"></use>
@@ -198,8 +237,7 @@
     <script src="{{ asset('vendors/i18next-http-backend/js/i18nextHttpBackend.js')}}"></script>
     <script src="{{ asset('vendors/i18next-browser-languagedetector/js/i18nextBrowserLanguageDetector.js')}}"></script>
     <script src="{{ asset('js/i18next.js')}}"></script>
-
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Plugins and scripts required by this view-->
     <script src="{{ asset('vendors/chart.js/js/chart.umd.js')}}"></script>
@@ -218,7 +256,64 @@
           header.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
         }
       });
+
+      document.addEventListener('DOMContentLoaded', function() {
+          const mainSwitch = document.getElementById('switchFacturacion');
+
+          if (mainSwitch) {
+              // Creamos una función para no repetir código
+              const aplicarModoVisual = (isSibi) => {
+                  // 1. CONTROL DE MODALES
+                  document.querySelectorAll('.input-sibi-control').forEach(input => {
+                      input.readOnly = isSibi;
+                      input.placeholder = isSibi ? "Generación Automática" : "Ej: F001-000123";
+                      if (isSibi) input.value = "";
+                  });
+
+                  document.querySelectorAll('.seccion-sibi').forEach(div => {
+                      isSibi ? div.classList.remove('d-none') : div.classList.add('d-none');
+                  });
+
+                  // 2. CONTROL DE TABLAS
+                  document.querySelectorAll('.col-sibi').forEach(col => {
+                      isSibi ? col.classList.remove('d-none') : col.classList.add('d-none');
+                  });
+
+                  document.querySelectorAll('.col-manual').forEach(col => {
+                      isSibi ? col.classList.add('d-none') : col.classList.remove('d-none');
+                  });
+
+                  // 3. REAJUSTE DE DATATABLES (Dentro de la función para que sea instantáneo)
+                  setTimeout(() => {
+                      $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().draw();
+                      console.log("Tablas reajustadas");
+                  }, 200);
+              };
+
+              // Escuchar el cambio del switch
+              mainSwitch.addEventListener('change', function() {
+                  const isSibi = this.checked;
+                  aplicarModoVisual(isSibi); // Llamamos a la función visual
+
+                  // PERSISTENCIA (AJAX)
+                  fetch("{{ route('admin.ajustes.toggle') }}", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json",
+                          "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                      },
+                      body: JSON.stringify({ estado: isSibi ? 1 : 0 })
+                  })
+                      .then(response => response.json())
+                      .catch(error => console.error("Error en AJAX:", error));
+              });
+
+              // IMPORTANTE: Aplicar el estado inicial al cargar la página
+              aplicarModoVisual(mainSwitch.checked);
+          }
+      });
     </script>
+
     @stack('scripts')
 </body>
 </html>

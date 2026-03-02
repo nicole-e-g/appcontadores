@@ -5,16 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Agremiado;
+use Illuminate\Support\Facades\Http;
 use App\Models\Pago;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\SibiService;
 
 class PagoController extends Controller
 {
-    public function store(Request $request)
+    public function toggleFacturacion(Request $request)
     {
-        // A. Validamos que todo esté correcto según tu DB
+        \App\Models\Ajuste::where('clave', 'facturacion_activa')
+            ->update(['valor' => $request->estado]);
+
+        return response()->json(['message' => 'Configuración actualizada']);
+    }
+
+    public function store(Request $request, SibiService $sibi)
+    {
+        // A. VALIDACIÓN (Se mantiene igual)
         $request->validate([
             'agremiado_id' => 'required|exists:agremiados,id',
             'tipo_pago'    => 'required|in:Habilitacion,Constancia,Carnet',
@@ -22,51 +32,78 @@ class PagoController extends Controller
             'año_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|gte:año_inicio',
             'mes_inicio'   => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
             'mes_final'    => 'required_if:tipo_pago,Habilitacion|nullable|integer|between:1,12',
-            'comprobante'  => 'required|string',
+            'comprobante'  => 'nullable|string',
             'monto'        => 'required|numeric',
             'fecha_pago'   => 'required_if:tipo_pago,Constancia|nullable|date',
         ]);
 
-        // B. VALIDACIÓN DE SOLAPAMIENTO (Solo para Habilitación)
+        // B. VALIDACIÓN DE SOLAPAMIENTO (Se mantiene igual)
         if ($request->tipo_pago === 'Habilitacion') {
             $solicitadoInicio = ($request->año_inicio * 100) + $request->mes_inicio;
             $solicitadoFinal = ($request->año_final * 100) + $request->mes_final;
 
             $existeSolapamiento = Pago::where('agremiado_id', $request->agremiado_id)
                 ->where('tipo_pago', 'Habilitacion')
-                ->where('estado', 'Pagado') // Ignoramos los anulados
-                ->where(function($query) use ($request) {
-                    // Verificamos si el rango solicitado choca con registros existentes
-                    $query->whereBetween('mes_inicio', [$request->mes_inicio, $request->mes_final])
-                        ->orWhereBetween('mes_final', [$request->mes_inicio, $request->mes_final]);
-                })
+                ->where('estado', 'Pagado')
                 ->where(function($query) use ($solicitadoInicio, $solicitadoFinal) {
-                    // Lógica de rangos: (Inicio1 <= Fin2) AND (Fin1 >= Inicio2)
                     $query->whereRaw('(año_inicio * 100 + mes_inicio) <= ?', [$solicitadoFinal])
                         ->whereRaw('(año_final * 100 + mes_final) >= ?', [$solicitadoInicio]);
                 })
                 ->exists();
 
             if ($existeSolapamiento) {
-                return redirect()->back()
-                    ->withInput() // Mantiene los datos en el modal
-                    ->with('error', 'Error: El rango seleccionado se cruza con un pago ya existente.');
+                return redirect()->back()->withInput()->with('error', 'Error: El rango seleccionado se cruza con un pago ya existente.');
             }
         }
-        // C. Guardamos el Pago (Habilitacion o Constancia)
-        $pago = \App\Models\Pago::create($request->all());
 
+        // C. GUARDADO LOCAL
+        $pago = \App\Models\Pago::create($request->all());
+        $pago->load('agremiado');
+
+        // D. INTEGRACIÓN CON SIBI (Solo una vez)
+        $facturacionActiva = \App\Models\Ajuste::where('clave', 'facturacion_activa')->value('valor');
+        $mensajeExito = "Pago de {$pago->tipo_pago} registrado exitosamente.";
+
+        if ($facturacionActiva) {
+            // Llamamos al servicio pasando el objeto $pago
+            $resultado = $sibi->emitirComprobante($pago, $request->tipo_comprobante_sibi);
+
+            \Log::info("CONTENIDO RECIBIDO DE SIBI (PAGO {$pago->id}):", (array)$resultado);
+
+            if (isset($resultado['data']['sales'])) {
+                $doc = $resultado['data']['sales'];
+
+                $sibiId = "621550170d660";
+                //$sibiId = "6215503256fa1"; //Producción
+                $serie  = $doc['serie'];  // La serie (ej: FE01)
+                $number = $doc['number']; // El número (ej: 489)
+                $tipo = 'invoice';
+
+                $urlDirectaSibi = "https://test.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de prueba
+                //$urlDirectaSibi = "https://test.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de producción
+
+                // Actualizamos con los datos legales de SUNAT
+                $pago->update([
+                    'comprobante' => $doc['serie'] . '-' . $doc['number'],
+                    'comprobante_url' => $urlDirectaSibi
+
+                ]);
+
+            } else {
+                \Log::error("SIBI no generó el documento para el pago ID: {$pago->id}". json_encode($resultado));
+            }
+        }
+
+        // E. PROCESOS EXTRA (Carnet y Habilidad)
         if ($pago->tipo_pago === 'Carnet') {
             \App\Models\Carnet::create([
                 'tipo_tramite'   => $request->tipo_tramite,
                 'agremiado_id'   => $pago->agremiado_id,
                 'pago_id'        => $pago->id,
-                'estado_entrega' => 'Pendiente' // Se crea como pendiente por defecto
+                'estado_entrega' => 'Pendiente'
             ]);
         }
 
-        // D. ACTUALIZACIÓN DE HABILIDAD (Solo si es Habilitacion)
-        // Las constancias no afectan la fecha de vencimiento
         if ($pago->tipo_pago === 'Habilitacion') {
             $this->sincronizarHabilidad($pago->agremiado_id);
         }
@@ -188,4 +225,5 @@ class PagoController extends Controller
 
         return $pdf->download('Constancia_'.$agremiado->matricula.'.pdf');
     }
+
 }

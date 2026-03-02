@@ -25,6 +25,7 @@ class Pago extends Model
         'fecha_anulacion',
         'tipo_pago',
         'fecha_pago',
+        'comprobante_url',
     ];
 
     /**

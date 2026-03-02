@@ -64,6 +64,9 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
         Route::post('cursos/anular/{curso}', [CursoController::class, 'anular'])->name('admin.cursos.anular');
 
         //Route::get('cursos/{curso}', [CursoController::class, 'show'])->name('admin.cursos.show');
+
+        // routes/web.php (Dentro del grupo de admin)
+        Route::post('/ajustes/toggle-facturacion', [PagoController::class, 'toggleFacturacion'])->name('admin.ajustes.toggle');
     });
 
     //AGREMIADOS
@@ -87,5 +90,7 @@ Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function ()
     Route::post('/pagos/{pago}/anular', [PagoController::class, 'anular'])->name('admin.pagos.anular');
 
     Route::get('/pagos/{pago}/descargar', [PagoController::class, 'descargarPDF'])->name('admin.pagos.descargar');
+
+    //Route::get('/pagos/{pago}/descargarsibi/{serie}/{number}', [PagoController::class, 'descargarComprobante'])->name('admin.pagos.descargarsibi');
 
 });
