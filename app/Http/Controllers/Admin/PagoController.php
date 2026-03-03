@@ -73,14 +73,14 @@ class PagoController extends Controller
             if (isset($resultado['data']['sales'])) {
                 $doc = $resultado['data']['sales'];
 
-                $sibiId = "621550170d660";
-                //$sibiId = "6215503256fa1"; //Producción
+                //$sibiId = "621550170d660"; //Prueba
+                $sibiId = "6215503256fa1"; //Producción
                 $serie  = $doc['serie'];  // La serie (ej: FE01)
                 $number = $doc['number']; // El número (ej: 489)
                 $tipo = 'invoice';
 
-                $urlDirectaSibi = "https://test.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de prueba
-                //$urlDirectaSibi = "https://test.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de producción
+                //$urlDirectaSibi = "https://test.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de prueba
+                $urlDirectaSibi = "https://app.sibi.pe/pdf/{$sibiId}/{$serie}/{$number}?t={$tipo}"; //sirve para el API de producción
 
                 // Actualizamos con los datos legales de SUNAT
                 $pago->update([

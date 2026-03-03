@@ -192,7 +192,7 @@
                                     <th class="bg-body-secondary text-center">Monto</th>
                                     <th class="bg-body-secondary text-center">Estado</th>
                                     <th class="bg-body-secondary col-sibi {{ $facturacionActiva ? '' : 'd-none' }}">Comprobante</th>
-                                    <th class="bg-body-secondary col-manual {{ $facturacionActiva ? 'd-none' : '' }}">Acción</th>
+                                    <th class="bg-body-secondary">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -222,16 +222,16 @@
                                                 <a href="{{ $pago->comprobante_url }}" target="_blank" class="btn btn-sm btn-outline-danger"><svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-file')}}"></use></svg> PDF</a>
                                             @endif
                                         </td>
-                                        <td class=" col-manual {{ $facturacionActiva ? 'd-none' : '' }}">
+                                        <td>
                                             <div class="dropdown">
                                                 <button class="btn btn-transparent p-0" type="button" data-coreui-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <svg class="icon"><use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-options')}}"></use></svg>
                                                 </button>
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     @if($pago->estado == 'Pagado')
-                                                        <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#editModalConstancia-{{ $pago->id }}">Editar</a>
+                                                        <a class="dropdown-item  col-manual {{ $facturacionActiva ? 'd-none' : '' }}" data-coreui-toggle="modal" data-coreui-target="#editModalConstancia-{{ $pago->id }}">Editar</a>
                                                         <a class="dropdown-item" href="{{ route('admin.pagos.descargar', $pago) }}"> Descargar </a>
-                                                        <a class="dropdown-item text-danger" data-coreui-i18n="anular" data-coreui-toggle="modal" data-coreui-target="#anularModal-{{ $pago->id }}">Anular pago</a>
+                                                        <a class="dropdown-item text-danger col-manual {{ $facturacionActiva ? 'd-none' : '' }}" data-coreui-i18n="anular" data-coreui-toggle="modal" data-coreui-target="#anularModal-{{ $pago->id }}">Anular pago</a>
                                                     @else
                                                         <a class="dropdown-item" data-coreui-toggle="modal" data-coreui-target="#modalVerMotivo-{{ $pago->id }}">
                                                             <i class="cil-search"></i> Ver motivo de anulación
