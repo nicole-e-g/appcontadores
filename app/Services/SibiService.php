@@ -12,7 +12,8 @@ class SibiService
     public function __construct()
     {
         // Jalamos la configuración del .env
-        $this->url = env('SIBI_API_URL', 'https://test.api.sibi.pe/graphql');
+        //$this->url = env('SIBI_API_URL', 'https://test.api.sibi.pe/graphql'); //pruebas
+        $this->url = env('SIBI_API_URL', 'https://api.sibi.pe/graphql'); //producción
         $this->token = env('SIBI_TOKEN');
     }
 
@@ -27,6 +28,35 @@ class SibiService
         //  'Constancia'   => 'C', // Para Trámites de Constancias
         //  'Carnet'       => 'A', // Para Solicitud de Carnet
         //];
+
+        $mesesNombres = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+
+        // --- LÓGICA DE DESCRIPCIÓN DINÁMICA ---
+        $descripcionFinal = "";
+
+        if ($pago->tipo_pago === 'Habilitacion') {
+            // Años: Si es el mismo año solo pone uno, sino pone el rango
+            $anioTxt = ($pago->año_inicio == $pago->año_final) ? $pago->año_inicio : $pago->año_inicio . ' al ' . $pago->año_final;
+
+            // Meses: Si es el mismo mes solo uno, sino pone "Mes A y Mes B"
+            $mesTxt = ($pago->mes_inicio == $pago->mes_final)
+                ? $mesesNombres[$pago->mes_inicio]
+                : $mesesNombres[$pago->mes_inicio] . ' y ' . $mesesNombres[$pago->mes_final];
+
+            $descripcionFinal = "PAGO POR HABILITACIÓN DEL PERIODO: " . $anioTxt . " EN EL MES(ES) " . $mesTxt;
+
+        } elseif ($pago->tipo_pago === 'Constancia') {
+            $descripcionFinal = "PAGO POR HABILITACIÓN DE CONSTANCIA";
+
+        } elseif ($pago->tipo_pago === 'Carnet') {
+            // Si existe la relación carnet usamos el tipo_tramite (Colegiatura/Duplicado), sino por defecto DUPLICADO
+            $tipoTramite = isset($pago->carnet) ? strtoupper($pago->carnet->tipo_tramite) : 'DUPLICADO';
+            $descripcionFinal = "PAGO POR " . $tipoTramite . " DE CARNET";
+        }
 
         // Convertimos $pago a objeto si viene como array para que el resto del código no falle
         if (is_array($pago)) {
@@ -72,6 +102,7 @@ class SibiService
                 $contact_identity: String,
                 $contact_name: String,
                 $taxable_operations: Float,
+                $unaffected_operations: Float,
                 $total_igv: Float,
                 $details: [SaleDetailsInput!]!
             ) {
@@ -89,7 +120,6 @@ class SibiService
                     total_igv: $total_igv,
                     details: $details
                 ) {
-                    id
                     serie
                     number
                     total_price
@@ -113,7 +143,8 @@ class SibiService
             'total_igv' => $igvTotal, // [cite: 12]
             'details' => [
                 [
-                    'description' => 'PAGO POR '. strtoupper($pago->tipo_pago),
+                    'item_id' => null,
+                    'description' => $descripcionFinal,
                     'quantity' => 1,
                     'unit_measure' => 'NIU', // Unidad ZZ para Servicios [cite: 21]
                     'unit_value' => $valorVenta,
