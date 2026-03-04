@@ -146,7 +146,7 @@ class SibiService
                     'item_id' => null,
                     'description' => $descripcionFinal,
                     'quantity' => 1,
-                    'unit_measure' => 'NIU', // Unidad ZZ para Servicios [cite: 21]
+                    'unit_measure' => 'ZZ', // Unidad ZZ para Servicios [cite: 21]
                     'unit_value' => $valorVenta,
                     'unit_price' => $montoTotal,
                     'sale_value' => $valorVenta,
