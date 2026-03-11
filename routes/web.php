@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\CarnetController;
 use App\Http\Controllers\Admin\CursoController;
+use App\Http\Controllers\Admin\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,7 @@ Route::prefix('admin')->group(function () {
 
 Route::middleware(['auth:admin', 'nocache'])->prefix('admin')->group(function () {
     // Esta es la ruta que mostrará tu 'index' después del login
-    Route::get('/dashboard', [UsuarioController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::middleware(['superadmin'])->group(function () {
         //USUARIOS

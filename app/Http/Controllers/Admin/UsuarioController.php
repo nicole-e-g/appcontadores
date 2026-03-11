@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Agremiado;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -12,22 +13,17 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
-    public function index()
-    {
-        return view('index'); 
-    }
-
     public function listado()
     {
         // Lógica de acceso: Solo Superadmin ve todos, el resto solo se ve a sí mismo
         $usuarioLogueado = Auth::guard('admin')->user();
-       
+
         if (Gate::allows('es-superadmin')) {
             // Superadmin: obtiene todos los registros de la tabla 'usuarios'
-            $usuarios = Usuario::all(); 
+            $usuarios = Usuario::all();
         } else {
             // Admin Normal: solo su propio registro
-            $usuarios = collect([$usuarioLogueado]); 
+            $usuarios = collect([$usuarioLogueado]);
         }
         return view('listausuarios', compact('usuarios'));
     }
