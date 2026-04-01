@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\CarnetController;
 use App\Http\Controllers\Admin\CursoController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ReporteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,12 @@ Route::prefix('admin')->group(function () {
 
     // 3. Esta es la ruta para el botón de "Cerrar Sesión"
     Route::post('/logout', [LoginController::class, 'logout'])->name('admin.logout');
+
+    //REPORTES
+
+    Route::get('/reportes', [ReporteController::class, 'index'])->name('admin.reportes.index');
+
+    Route::get('/reportes/exportar', [ReporteController::class, 'exportExcel'])->name('admin.reportes.exportar');
 
 });
 

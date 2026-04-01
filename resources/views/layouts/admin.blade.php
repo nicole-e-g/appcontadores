@@ -129,6 +129,11 @@
                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/brand.svg#cib-slideshare') }}"></use>
                 </svg> Agremiados</a>
             </li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('admin.reportes.index') }}">
+                <svg class="nav-icon">
+                     <use xlink:href="{{ asset('vendors/@coreui/icons/svg/free.svg#cil-bar-chart') }}"></use>
+                </svg> Reportes<span class="badge badge-sm bg-success ms-auto">NEW</span></a>
+            </li>
             @if(auth()->guard('admin')->user()->rol === 'superadmin')
                 <li class="nav-title">Extras</li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('admin.carnets.index') }}">
