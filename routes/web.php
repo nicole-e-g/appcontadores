@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CarnetController;
 use App\Http\Controllers\Admin\CursoController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReporteController;
+use App\Http\Controllers\CongresoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,13 @@ use App\Http\Controllers\Admin\ReporteController;
 */
 Route::get('/consulta-habilitacion', [App\Http\Controllers\PublicAgremiadoController::class, 'index'])->name('public.habilidad.index');
 Route::post('/consulta-habilitacion', [App\Http\Controllers\PublicAgremiadoController::class, 'buscar'])->name('public.habilidad.buscar');
+
+//CONGRESO
+Route::get('/conaniif2026', [CongresoController::class, 'mostrarLogin'])->name('congreso.login');
+Route::post('/congreso/acceder', [CongresoController::class, 'acceder'])->name('congreso.acceder');
+Route::get('/conaniif2026/datos', [CongresoController::class, 'perfil'])->name('congreso.perfil');
+Route::put('/congreso/actualizar', [CongresoController::class, 'actualizar'])->name('congreso.actualizar');
+Route::get('/congreso/salir', [CongresoController::class, 'salir'])->name('congreso.salir');
 
 Route::prefix('admin')->group(function () {
     // 1. Esta es la ruta GET que te da el error 404

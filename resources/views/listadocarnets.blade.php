@@ -117,7 +117,7 @@
                     { data: 'agremiado.dni', name: 'agremiado.dni' },
                     { data: 'agremiado.ruc', name: 'agremiado.ruc' },
                     { data: 'agremiado.fecha_matricula', name: 'agremiado.fecha_matricula' },
-                    { data: 'pago.fecha_pago', name: 'pago.fecha_pago' },
+                    { data: 'pago.created_at', name: 'pago.created_at' },
                     { data: 'accion', name: 'accion', orderable: false, searchable: false }
                 ]
             });
@@ -138,7 +138,7 @@
                                 class: 'text-center',
                                 searchable: false,
                                 orderable: false},
-                            { data: 'agremiado.fecha_matricula', name: 'agremiado.fecha_matricula' },
+                            { data: 'agremiado.matricula', name: 'agremiado.matricula' },
                             { data: 'agremiado.nombres', name: 'agremiado.nombres',
                                 render: function(data, type, row) {
                                     return row.agremiado.nombres + ' ' + row.agremiado.apellidos;
