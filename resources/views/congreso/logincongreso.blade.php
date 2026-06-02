@@ -26,7 +26,7 @@
                             <input type="text" name="usuario" class="form-control" placeholder="Tu número de documento" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Contraseña (DNI)</label>
+                            <label class="form-label">Contraseña</label>
                             <input type="password" name="password" class="form-control" placeholder="Tu número de documento" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Ingresar</button>
