@@ -55,6 +55,10 @@
                                 <input type="text" name="celular" class="form-control" value="{{ old('celular', $participante->celular) }}">
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña del Aula Vitual</label>
+                            <input type="text" name="aula" class="form-control" value="E#drX&pA(8X" readonly>
+                        </div>
 
                         <div class="text-end mt-3">
                             <button type="submit" class="btn btn-success text-white">Guardar y Confirmar Datos</button>
