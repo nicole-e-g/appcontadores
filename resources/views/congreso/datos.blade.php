@@ -56,8 +56,8 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Contraseña del Aula Vitual</label>
-                            <input type="text" name="aula" class="form-control" value="E#drX&pA(8X" readonly>
+                            <label class="form-label">Contraseña del Aula Virtual</label>
+                            <input type="text" class="form-control bg-body-secondary" value="E#drX&pA(8X" readonly>
                         </div>
 
                         <div class="text-end mt-3">
